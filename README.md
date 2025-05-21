@@ -1,7 +1,8 @@
 # Embedded-Indicators-Control-Over-Mobile-Phones
 
 
-1. High-Level Architecture and Software Requirement Specification
+High-Level Architecture and Software Requirement Specification-
+   
 The system is an embedded software module implemented on the PSoC platform that:
 - Reads two physical button inputs (left and right)
 - Executes decision logic defined in a Simulink Stateflow model
