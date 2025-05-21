@@ -11,13 +11,16 @@ The system is an embedded software module implemented on the PSoC platform that:
 System Components:
 - Inputs: Left and Right Buttons (active-low)
 - Outputs: Two PWM-controlled LEDs, UART logs
-- Logic Core: Simulink-generated C code from Stateflow 
+- Logic Core: Simulink-generated C code from Stateflow
+  
 The goal of this project was to implement a real-time indicator control system using a combination of:
-•	Embedded C code written and compiled in PSoC Creator 4.4
-•	Simulink Stateflow logic auto generated into C code
-•	Input from real buttons
-•	Output to LEDs via PWM
-•	Status logs sent over UART
+
+-	Embedded C code written and compiled in PSoC Creator 4.4
+-	Simulink Stateflow logic auto generated into C code
+-	Input from real buttons
+-	Output to LEDs via PWM
+-	Status logs sent over UART
+  
 This type of embedded control logic is commonly used in automotive systems for indicators or hazard warnings, making it a great real-world use case.
 ________________________________________
 Planning and Design Strategy
@@ -33,7 +36,9 @@ Tools Used:
 -	MATLAB Simulink
 -	Stateflow
 -	Embedded Coder
-- Process:
+  
+Process:
+
 1.	Create a Simulink model named indicator_control_model.slx.
 2.	Inside, add a Stateflow Chart with:
 -	Inputs: left_btn, right_btn (boolean)
@@ -50,7 +55,9 @@ Tools Used:
 -	indicator_control_model.h
 -	indicator_control_model_types.h
 -	rtwtypes.h
+  
 The logic from the Simulink model was now ready to be used as a C library in PSoC Creator.
+
 ________________________________________
 
 PSoC Creator 4.4 Implementation
@@ -95,7 +102,7 @@ Implementation Steps:
 -	Called indicator_control_model_initialize() once at startup.
 -	Called indicator_control_model_step() every 100 ms in the main loop.
   
-5. Real-Time Scheduling
+4. Real-Time Scheduling
    
 -	Used a hardware timer interrupt (Timer_1) to set a tick_100ms_flag.
 -	In the main loop:
