@@ -1,0 +1,1847 @@
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"indicator_app.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.IndicatorApp_Init,"ax",%progbits
+  20              		.align	2
+  21              		.global	IndicatorApp_Init
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	IndicatorApp_Init, %function
+  25              	IndicatorApp_Init:
+  26              	.LFB63:
+  27              		.file 1 "indicator_app.c"
+   1:indicator_app.c **** /* ========================================
+   2:indicator_app.c ****  *
+   3:indicator_app.c ****  * Copyright YOUR COMPANY, THE YEAR
+   4:indicator_app.c ****  * All Rights Reserved
+   5:indicator_app.c ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:indicator_app.c ****  *
+   7:indicator_app.c ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:indicator_app.c ****  * WHICH IS THE PROPERTY OF your company.
+   9:indicator_app.c ****  *
+  10:indicator_app.c ****  * ========================================
+  11:indicator_app.c **** */
+  12:indicator_app.c **** #include "indicator_app.h"
+  13:indicator_app.c **** #include "pwm_driver.h"
+  14:indicator_app.c **** #include "uart_driver.h"
+  15:indicator_app.c **** #include <stdbool.h>
+  16:indicator_app.c **** 
+  17:indicator_app.c **** // Indicator states
+  18:indicator_app.c **** static bool left_indicator_active = false;
+  19:indicator_app.c **** static bool right_indicator_active = false;
+  20:indicator_app.c **** static bool hazard_active = false;
+  21:indicator_app.c **** static uint32_t last_toggle_time = 0;
+  22:indicator_app.c **** 
+  23:indicator_app.c **** void IndicatorApp_Init(void) {
+  28              		.loc 1 23 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  24:indicator_app.c ****     left_indicator_active = false;
+  33              		.loc 1 24 0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 2
+
+
+  34 0000 034B     		ldr	r3, .L2
+  35 0002 0022     		movs	r2, #0
+  36 0004 1A70     		strb	r2, [r3]
+  25:indicator_app.c ****     right_indicator_active = false;
+  37              		.loc 1 25 0
+  38 0006 5A70     		strb	r2, [r3, #1]
+  26:indicator_app.c ****     hazard_active = false;
+  39              		.loc 1 26 0
+  40 0008 9A70     		strb	r2, [r3, #2]
+  27:indicator_app.c ****     last_toggle_time = 0;
+  41              		.loc 1 27 0
+  42 000a 5A60     		str	r2, [r3, #4]
+  43 000c 7047     		bx	lr
+  44              	.L3:
+  45 000e 00BF     		.align	2
+  46              	.L2:
+  47 0010 00000000 		.word	.LANCHOR0
+  48              		.cfi_endproc
+  49              	.LFE63:
+  50              		.size	IndicatorApp_Init, .-IndicatorApp_Init
+  51              		.section	.text.IndicatorApp_Run,"ax",%progbits
+  52              		.align	2
+  53              		.global	IndicatorApp_Run
+  54              		.thumb
+  55              		.thumb_func
+  56              		.type	IndicatorApp_Run, %function
+  57              	IndicatorApp_Run:
+  58              	.LFB64:
+  28:indicator_app.c **** }
+  29:indicator_app.c **** 
+  30:indicator_app.c **** void IndicatorApp_Run(ButtonState *left_button, ButtonState *right_button, uint32_t current_time) {
+  59              		.loc 1 30 0
+  60              		.cfi_startproc
+  61              		@ args = 0, pretend = 0, frame = 0
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63              	.LVL0:
+  64 0000 38B5     		push	{r3, r4, r5, lr}
+  65              		.cfi_def_cfa_offset 16
+  66              		.cfi_offset 3, -16
+  67              		.cfi_offset 4, -12
+  68              		.cfi_offset 5, -8
+  69              		.cfi_offset 14, -4
+  70 0002 1446     		mov	r4, r2
+  31:indicator_app.c ****     // Detect button presses (1 sec = 10 ticks)
+  32:indicator_app.c ****     bool left_pressed = (left_button->state == BUTTON_PRESSED && left_button->prev_state != BUTTON_
+  71              		.loc 1 32 0
+  72 0004 0578     		ldrb	r5, [r0]	@ zero_extendqisi2
+  73 0006 1DB9     		cbnz	r5, .L25
+  74              		.loc 1 32 0 is_stmt 0 discriminator 1
+  75 0008 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+  76 000a 1BB9     		cbnz	r3, .L26
+  77              		.loc 1 32 0
+  78 000c 0022     		movs	r2, #0
+  79              	.LVL1:
+  80 000e 02E0     		b	.L5
+  81              	.LVL2:
+  82              	.L25:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 3
+
+
+  83 0010 0022     		movs	r2, #0
+  84              	.LVL3:
+  85 0012 00E0     		b	.L5
+  86              	.LVL4:
+  87              	.L26:
+  88 0014 0122     		movs	r2, #1
+  89              	.LVL5:
+  90              	.L5:
+  33:indicator_app.c ****     bool right_pressed = (right_button->state == BUTTON_PRESSED && right_button->prev_state != BUTT
+  91              		.loc 1 33 0 is_stmt 1 discriminator 6
+  92 0016 0878     		ldrb	r0, [r1]	@ zero_extendqisi2
+  93              	.LVL6:
+  94 0018 10B9     		cbnz	r0, .L27
+  95              		.loc 1 33 0 is_stmt 0 discriminator 1
+  96 001a 4B78     		ldrb	r3, [r1, #1]	@ zero_extendqisi2
+  97 001c 13B9     		cbnz	r3, .L28
+  98 001e 02E0     		b	.L6
+  99              	.L27:
+ 100              		.loc 1 33 0
+ 101 0020 0023     		movs	r3, #0
+ 102 0022 00E0     		b	.L6
+ 103              	.L28:
+ 104 0024 0123     		movs	r3, #1
+ 105              	.L6:
+ 106              	.LVL7:
+  34:indicator_app.c ****     static uint32_t left_press_start = 0;
+  35:indicator_app.c ****     static uint32_t right_press_start = 0;
+  36:indicator_app.c ****     static bool left_held = false;
+  37:indicator_app.c ****     static bool right_held = false;
+  38:indicator_app.c ****     
+  39:indicator_app.c ****     if (left_pressed) {
+ 107              		.loc 1 39 0 is_stmt 1 discriminator 6
+ 108 0026 1AB1     		cbz	r2, .L7
+  40:indicator_app.c ****         left_press_start = current_time;
+ 109              		.loc 1 40 0
+ 110 0028 5F4A     		ldr	r2, .L30
+ 111              	.LVL8:
+ 112 002a 9460     		str	r4, [r2, #8]
+  41:indicator_app.c ****         left_held = false;
+ 113              		.loc 1 41 0
+ 114 002c 0021     		movs	r1, #0
+ 115              	.LVL9:
+ 116 002e 1173     		strb	r1, [r2, #12]
+ 117              	.L7:
+  42:indicator_app.c ****     }
+  43:indicator_app.c ****     if (right_pressed) {
+ 118              		.loc 1 43 0
+ 119 0030 1BB1     		cbz	r3, .L8
+  44:indicator_app.c ****         right_press_start = current_time;
+ 120              		.loc 1 44 0
+ 121 0032 5D4B     		ldr	r3, .L30
+ 122              	.LVL10:
+ 123 0034 1C61     		str	r4, [r3, #16]
+  45:indicator_app.c ****         right_held = false;
+ 124              		.loc 1 45 0
+ 125 0036 0022     		movs	r2, #0
+ 126 0038 1A75     		strb	r2, [r3, #20]
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 4
+
+
+ 127              	.L8:
+  46:indicator_app.c ****     }
+  47:indicator_app.c ****     
+  48:indicator_app.c ****     if (left_button->state == BUTTON_PRESSED && (current_time - left_press_start) >= 10) {
+ 128              		.loc 1 48 0
+ 129 003a 3DB9     		cbnz	r5, .L9
+ 130              		.loc 1 48 0 is_stmt 0 discriminator 1
+ 131 003c 5A4B     		ldr	r3, .L30
+ 132 003e 9B68     		ldr	r3, [r3, #8]
+ 133 0040 E31A     		subs	r3, r4, r3
+ 134 0042 092B     		cmp	r3, #9
+ 135 0044 02D9     		bls	.L9
+  49:indicator_app.c ****         left_held = true;
+ 136              		.loc 1 49 0 is_stmt 1
+ 137 0046 0122     		movs	r2, #1
+ 138 0048 574B     		ldr	r3, .L30
+ 139 004a 1A73     		strb	r2, [r3, #12]
+ 140              	.L9:
+  50:indicator_app.c ****     }
+  51:indicator_app.c ****     if (right_button->state == BUTTON_PRESSED && (current_time - right_press_start) >= 10) {
+ 141              		.loc 1 51 0
+ 142 004c 38B9     		cbnz	r0, .L10
+ 143              		.loc 1 51 0 is_stmt 0 discriminator 1
+ 144 004e 564B     		ldr	r3, .L30
+ 145 0050 1B69     		ldr	r3, [r3, #16]
+ 146 0052 E31A     		subs	r3, r4, r3
+ 147 0054 092B     		cmp	r3, #9
+ 148 0056 02D9     		bls	.L10
+  52:indicator_app.c ****         right_held = true;
+ 149              		.loc 1 52 0 is_stmt 1
+ 150 0058 0122     		movs	r2, #1
+ 151 005a 534B     		ldr	r3, .L30
+ 152 005c 1A75     		strb	r2, [r3, #20]
+ 153              	.L10:
+  53:indicator_app.c ****     }
+  54:indicator_app.c ****     
+  55:indicator_app.c ****     // Indicator logic
+  56:indicator_app.c ****     if (left_held && right_held) {
+ 154              		.loc 1 56 0
+ 155 005e 524B     		ldr	r3, .L30
+ 156 0060 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 157 0062 23B3     		cbz	r3, .L11
+ 158              		.loc 1 56 0 is_stmt 0 discriminator 1
+ 159 0064 504A     		ldr	r2, .L30
+ 160 0066 127D     		ldrb	r2, [r2, #20]	@ zero_extendqisi2
+ 161 0068 0AB3     		cbz	r2, .L11
+  57:indicator_app.c ****         if (hazard_active) {
+ 162              		.loc 1 57 0 is_stmt 1
+ 163 006a 4F4B     		ldr	r3, .L30
+ 164 006c 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 165 006e 83B1     		cbz	r3, .L12
+  58:indicator_app.c ****             hazard_active = false;
+ 166              		.loc 1 58 0
+ 167 0070 4D4B     		ldr	r3, .L30
+ 168 0072 0025     		movs	r5, #0
+ 169 0074 9D70     		strb	r5, [r3, #2]
+  59:indicator_app.c ****             left_indicator_active = false;
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 5
+
+
+ 170              		.loc 1 59 0
+ 171 0076 1D70     		strb	r5, [r3]
+  60:indicator_app.c ****             right_indicator_active = false;
+ 172              		.loc 1 60 0
+ 173 0078 5D70     		strb	r5, [r3, #1]
+  61:indicator_app.c ****             PWM_SetState(PWM_LEFT, 0);
+ 174              		.loc 1 61 0
+ 175 007a 2946     		mov	r1, r5
+ 176 007c 2846     		mov	r0, r5
+ 177 007e FFF7FEFF 		bl	PWM_SetState
+ 178              	.LVL11:
+  62:indicator_app.c ****             PWM_SetState(PWM_RIGHT, 0);
+ 179              		.loc 1 62 0
+ 180 0082 2946     		mov	r1, r5
+ 181 0084 0120     		movs	r0, #1
+ 182 0086 FFF7FEFF 		bl	PWM_SetState
+ 183              	.LVL12:
+  63:indicator_app.c ****             UART_Log("Hazard OFF");
+ 184              		.loc 1 63 0
+ 185 008a 4848     		ldr	r0, .L30+4
+ 186 008c FFF7FEFF 		bl	UART_Log
+ 187              	.LVL13:
+ 188 0090 08E0     		b	.L13
+ 189              	.L12:
+  64:indicator_app.c ****         } else {
+  65:indicator_app.c ****             hazard_active = true;
+ 190              		.loc 1 65 0
+ 191 0092 454B     		ldr	r3, .L30
+ 192 0094 0122     		movs	r2, #1
+ 193 0096 9A70     		strb	r2, [r3, #2]
+  66:indicator_app.c ****             left_indicator_active = false;
+ 194              		.loc 1 66 0
+ 195 0098 0022     		movs	r2, #0
+ 196 009a 1A70     		strb	r2, [r3]
+  67:indicator_app.c ****             right_indicator_active = false;
+ 197              		.loc 1 67 0
+ 198 009c 5A70     		strb	r2, [r3, #1]
+  68:indicator_app.c ****             UART_Log("Hazard ON");
+ 199              		.loc 1 68 0
+ 200 009e 4448     		ldr	r0, .L30+8
+ 201 00a0 FFF7FEFF 		bl	UART_Log
+ 202              	.LVL14:
+ 203              	.L13:
+  69:indicator_app.c ****         }
+  70:indicator_app.c ****         left_held = false;
+ 204              		.loc 1 70 0
+ 205 00a4 404B     		ldr	r3, .L30
+ 206 00a6 0022     		movs	r2, #0
+ 207 00a8 1A73     		strb	r2, [r3, #12]
+  71:indicator_app.c ****         right_held = false;
+ 208              		.loc 1 71 0
+ 209 00aa 1A75     		strb	r2, [r3, #20]
+ 210 00ac 5EE0     		b	.L14
+ 211              	.L11:
+  72:indicator_app.c ****     } else if (left_held) {
+ 212              		.loc 1 72 0
+ 213 00ae 63B3     		cbz	r3, .L15
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 6
+
+
+  73:indicator_app.c ****         if (hazard_active) {
+ 214              		.loc 1 73 0
+ 215 00b0 3D4B     		ldr	r3, .L30
+ 216 00b2 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 217 00b4 73B1     		cbz	r3, .L16
+  74:indicator_app.c ****             hazard_active = false;
+ 218              		.loc 1 74 0
+ 219 00b6 3C4B     		ldr	r3, .L30
+ 220 00b8 0021     		movs	r1, #0
+ 221 00ba 9970     		strb	r1, [r3, #2]
+  75:indicator_app.c ****             left_indicator_active = true;
+ 222              		.loc 1 75 0
+ 223 00bc 0120     		movs	r0, #1
+ 224 00be 1870     		strb	r0, [r3]
+  76:indicator_app.c ****             right_indicator_active = false;
+ 225              		.loc 1 76 0
+ 226 00c0 5970     		strb	r1, [r3, #1]
+  77:indicator_app.c ****             PWM_SetState(PWM_RIGHT, 0);
+ 227              		.loc 1 77 0
+ 228 00c2 FFF7FEFF 		bl	PWM_SetState
+ 229              	.LVL15:
+  78:indicator_app.c ****             UART_Log("Hazard OFF");
+ 230              		.loc 1 78 0
+ 231 00c6 3948     		ldr	r0, .L30+4
+ 232 00c8 FFF7FEFF 		bl	UART_Log
+ 233              	.LVL16:
+  79:indicator_app.c ****             UART_Log("Left Indicator ON");
+ 234              		.loc 1 79 0
+ 235 00cc 3948     		ldr	r0, .L30+12
+ 236 00ce FFF7FEFF 		bl	UART_Log
+ 237              	.LVL17:
+ 238 00d2 16E0     		b	.L17
+ 239              	.L16:
+  80:indicator_app.c ****         } else if (left_indicator_active) {
+ 240              		.loc 1 80 0
+ 241 00d4 344B     		ldr	r3, .L30
+ 242 00d6 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 243 00d8 4BB1     		cbz	r3, .L18
+  81:indicator_app.c ****             left_indicator_active = false;
+ 244              		.loc 1 81 0
+ 245 00da 0020     		movs	r0, #0
+ 246 00dc 324B     		ldr	r3, .L30
+ 247 00de 1870     		strb	r0, [r3]
+  82:indicator_app.c ****             PWM_SetState(PWM_LEFT, 0);
+ 248              		.loc 1 82 0
+ 249 00e0 0146     		mov	r1, r0
+ 250 00e2 FFF7FEFF 		bl	PWM_SetState
+ 251              	.LVL18:
+  83:indicator_app.c ****             UART_Log("Left Indicator OFF");
+ 252              		.loc 1 83 0
+ 253 00e6 3448     		ldr	r0, .L30+16
+ 254 00e8 FFF7FEFF 		bl	UART_Log
+ 255              	.LVL19:
+ 256 00ec 09E0     		b	.L17
+ 257              	.L18:
+  84:indicator_app.c ****         } else {
+  85:indicator_app.c ****             left_indicator_active = true;
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 7
+
+
+ 258              		.loc 1 85 0
+ 259 00ee 2E4B     		ldr	r3, .L30
+ 260 00f0 0120     		movs	r0, #1
+ 261 00f2 1870     		strb	r0, [r3]
+  86:indicator_app.c ****             right_indicator_active = false;
+ 262              		.loc 1 86 0
+ 263 00f4 0021     		movs	r1, #0
+ 264 00f6 5970     		strb	r1, [r3, #1]
+  87:indicator_app.c ****             PWM_SetState(PWM_RIGHT, 0);
+ 265              		.loc 1 87 0
+ 266 00f8 FFF7FEFF 		bl	PWM_SetState
+ 267              	.LVL20:
+  88:indicator_app.c ****             UART_Log("Left Indicator ON");
+ 268              		.loc 1 88 0
+ 269 00fc 2D48     		ldr	r0, .L30+12
+ 270 00fe FFF7FEFF 		bl	UART_Log
+ 271              	.LVL21:
+ 272              	.L17:
+  89:indicator_app.c ****         }
+  90:indicator_app.c ****         left_held = false;
+ 273              		.loc 1 90 0
+ 274 0102 0022     		movs	r2, #0
+ 275 0104 284B     		ldr	r3, .L30
+ 276 0106 1A73     		strb	r2, [r3, #12]
+ 277 0108 30E0     		b	.L14
+ 278              	.L15:
+  91:indicator_app.c ****     } else if (right_held) {
+ 279              		.loc 1 91 0
+ 280 010a 274B     		ldr	r3, .L30
+ 281 010c 1B7D     		ldrb	r3, [r3, #20]	@ zero_extendqisi2
+ 282 010e 6BB3     		cbz	r3, .L14
+  92:indicator_app.c ****         if (hazard_active) {
+ 283              		.loc 1 92 0
+ 284 0110 254B     		ldr	r3, .L30
+ 285 0112 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 286 0114 7BB1     		cbz	r3, .L19
+  93:indicator_app.c ****             hazard_active = false;
+ 287              		.loc 1 93 0
+ 288 0116 244B     		ldr	r3, .L30
+ 289 0118 0020     		movs	r0, #0
+ 290 011a 9870     		strb	r0, [r3, #2]
+  94:indicator_app.c ****             left_indicator_active = false;
+ 291              		.loc 1 94 0
+ 292 011c 1870     		strb	r0, [r3]
+  95:indicator_app.c ****             right_indicator_active = true;
+ 293              		.loc 1 95 0
+ 294 011e 0122     		movs	r2, #1
+ 295 0120 5A70     		strb	r2, [r3, #1]
+  96:indicator_app.c ****             PWM_SetState(PWM_LEFT, 0);
+ 296              		.loc 1 96 0
+ 297 0122 0146     		mov	r1, r0
+ 298 0124 FFF7FEFF 		bl	PWM_SetState
+ 299              	.LVL22:
+  97:indicator_app.c ****             UART_Log("Hazard OFF");
+ 300              		.loc 1 97 0
+ 301 0128 2048     		ldr	r0, .L30+4
+ 302 012a FFF7FEFF 		bl	UART_Log
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 8
+
+
+ 303              	.LVL23:
+  98:indicator_app.c ****             UART_Log("Right Indicator ON");
+ 304              		.loc 1 98 0
+ 305 012e 2348     		ldr	r0, .L30+20
+ 306 0130 FFF7FEFF 		bl	UART_Log
+ 307              	.LVL24:
+ 308 0134 17E0     		b	.L20
+ 309              	.L19:
+  99:indicator_app.c ****         } else if (right_indicator_active) {
+ 310              		.loc 1 99 0
+ 311 0136 1C4B     		ldr	r3, .L30
+ 312 0138 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 313 013a 4BB1     		cbz	r3, .L21
+ 100:indicator_app.c ****             right_indicator_active = false;
+ 314              		.loc 1 100 0
+ 315 013c 0021     		movs	r1, #0
+ 316 013e 1A4B     		ldr	r3, .L30
+ 317 0140 5970     		strb	r1, [r3, #1]
+ 101:indicator_app.c ****             PWM_SetState(PWM_RIGHT, 0);
+ 318              		.loc 1 101 0
+ 319 0142 0120     		movs	r0, #1
+ 320 0144 FFF7FEFF 		bl	PWM_SetState
+ 321              	.LVL25:
+ 102:indicator_app.c ****             UART_Log("Right Indicator OFF");
+ 322              		.loc 1 102 0
+ 323 0148 1D48     		ldr	r0, .L30+24
+ 324 014a FFF7FEFF 		bl	UART_Log
+ 325              	.LVL26:
+ 326 014e 0AE0     		b	.L20
+ 327              	.L21:
+ 103:indicator_app.c ****         } else {
+ 104:indicator_app.c ****             right_indicator_active = true;
+ 328              		.loc 1 104 0
+ 329 0150 154B     		ldr	r3, .L30
+ 330 0152 0122     		movs	r2, #1
+ 331 0154 5A70     		strb	r2, [r3, #1]
+ 105:indicator_app.c ****             left_indicator_active = false;
+ 332              		.loc 1 105 0
+ 333 0156 0020     		movs	r0, #0
+ 334 0158 1870     		strb	r0, [r3]
+ 106:indicator_app.c ****             PWM_SetState(PWM_LEFT, 0);
+ 335              		.loc 1 106 0
+ 336 015a 0146     		mov	r1, r0
+ 337 015c FFF7FEFF 		bl	PWM_SetState
+ 338              	.LVL27:
+ 107:indicator_app.c ****             UART_Log("Right Indicator ON");
+ 339              		.loc 1 107 0
+ 340 0160 1648     		ldr	r0, .L30+20
+ 341 0162 FFF7FEFF 		bl	UART_Log
+ 342              	.LVL28:
+ 343              	.L20:
+ 108:indicator_app.c ****         }
+ 109:indicator_app.c ****         right_held = false;
+ 344              		.loc 1 109 0
+ 345 0166 0022     		movs	r2, #0
+ 346 0168 0F4B     		ldr	r3, .L30
+ 347 016a 1A75     		strb	r2, [r3, #20]
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 9
+
+
+ 348              	.L14:
+ 110:indicator_app.c ****     }
+ 111:indicator_app.c ****     
+ 112:indicator_app.c ****     // Toggle LEDs every 300 msec (3 ticks)
+ 113:indicator_app.c ****     if ((current_time - last_toggle_time) >= 3) {
+ 349              		.loc 1 113 0
+ 350 016c 0E4B     		ldr	r3, .L30
+ 351 016e 5B68     		ldr	r3, [r3, #4]
+ 352 0170 E31A     		subs	r3, r4, r3
+ 353 0172 022B     		cmp	r3, #2
+ 354 0174 17D9     		bls	.L4
+ 114:indicator_app.c ****         last_toggle_time = current_time;
+ 355              		.loc 1 114 0
+ 356 0176 0C4B     		ldr	r3, .L30
+ 357 0178 5C60     		str	r4, [r3, #4]
+ 115:indicator_app.c ****         if (hazard_active) {
+ 358              		.loc 1 115 0
+ 359 017a 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 360 017c 33B1     		cbz	r3, .L23
+ 116:indicator_app.c ****             PWM_Toggle(PWM_LEFT);
+ 361              		.loc 1 116 0
+ 362 017e 0020     		movs	r0, #0
+ 363 0180 FFF7FEFF 		bl	PWM_Toggle
+ 364              	.LVL29:
+ 117:indicator_app.c ****             PWM_Toggle(PWM_RIGHT);
+ 365              		.loc 1 117 0
+ 366 0184 0120     		movs	r0, #1
+ 367 0186 FFF7FEFF 		bl	PWM_Toggle
+ 368              	.LVL30:
+ 369 018a 38BD     		pop	{r3, r4, r5, pc}
+ 370              	.LVL31:
+ 371              	.L23:
+ 118:indicator_app.c ****         } else if (left_indicator_active) {
+ 372              		.loc 1 118 0
+ 373 018c 064B     		ldr	r3, .L30
+ 374 018e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 375 0190 1BB1     		cbz	r3, .L24
+ 119:indicator_app.c ****             PWM_Toggle(PWM_LEFT);
+ 376              		.loc 1 119 0
+ 377 0192 0020     		movs	r0, #0
+ 378 0194 FFF7FEFF 		bl	PWM_Toggle
+ 379              	.LVL32:
+ 380 0198 38BD     		pop	{r3, r4, r5, pc}
+ 381              	.LVL33:
+ 382              	.L24:
+ 120:indicator_app.c ****         } else if (right_indicator_active) {
+ 383              		.loc 1 120 0
+ 384 019a 034B     		ldr	r3, .L30
+ 385 019c 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 386 019e 13B1     		cbz	r3, .L4
+ 121:indicator_app.c ****             PWM_Toggle(PWM_RIGHT);
+ 387              		.loc 1 121 0
+ 388 01a0 0120     		movs	r0, #1
+ 389 01a2 FFF7FEFF 		bl	PWM_Toggle
+ 390              	.LVL34:
+ 391              	.L4:
+ 392 01a6 38BD     		pop	{r3, r4, r5, pc}
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 10
+
+
+ 393              	.LVL35:
+ 394              	.L31:
+ 395              		.align	2
+ 396              	.L30:
+ 397 01a8 00000000 		.word	.LANCHOR0
+ 398 01ac 00000000 		.word	.LC0
+ 399 01b0 0C000000 		.word	.LC1
+ 400 01b4 18000000 		.word	.LC2
+ 401 01b8 2C000000 		.word	.LC3
+ 402 01bc 40000000 		.word	.LC4
+ 403 01c0 54000000 		.word	.LC5
+ 404              		.cfi_endproc
+ 405              	.LFE64:
+ 406              		.size	IndicatorApp_Run, .-IndicatorApp_Run
+ 407              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 408              		.align	2
+ 409              	.LC0:
+ 410 0000 48617A61 		.ascii	"Hazard OFF\000"
+ 410      7264204F 
+ 410      464600
+ 411 000b 00       		.space	1
+ 412              	.LC1:
+ 413 000c 48617A61 		.ascii	"Hazard ON\000"
+ 413      7264204F 
+ 413      4E00
+ 414 0016 0000     		.space	2
+ 415              	.LC2:
+ 416 0018 4C656674 		.ascii	"Left Indicator ON\000"
+ 416      20496E64 
+ 416      69636174 
+ 416      6F72204F 
+ 416      4E00
+ 417 002a 0000     		.space	2
+ 418              	.LC3:
+ 419 002c 4C656674 		.ascii	"Left Indicator OFF\000"
+ 419      20496E64 
+ 419      69636174 
+ 419      6F72204F 
+ 419      464600
+ 420 003f 00       		.space	1
+ 421              	.LC4:
+ 422 0040 52696768 		.ascii	"Right Indicator ON\000"
+ 422      7420496E 
+ 422      64696361 
+ 422      746F7220 
+ 422      4F4E00
+ 423 0053 00       		.space	1
+ 424              	.LC5:
+ 425 0054 52696768 		.ascii	"Right Indicator OFF\000"
+ 425      7420496E 
+ 425      64696361 
+ 425      746F7220 
+ 425      4F464600 
+ 426              		.bss
+ 427              		.align	2
+ 428              		.set	.LANCHOR0,. + 0
+ 429              		.type	left_indicator_active, %object
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 11
+
+
+ 430              		.size	left_indicator_active, 1
+ 431              	left_indicator_active:
+ 432 0000 00       		.space	1
+ 433              		.type	right_indicator_active, %object
+ 434              		.size	right_indicator_active, 1
+ 435              	right_indicator_active:
+ 436 0001 00       		.space	1
+ 437              		.type	hazard_active, %object
+ 438              		.size	hazard_active, 1
+ 439              	hazard_active:
+ 440 0002 00       		.space	1
+ 441 0003 00       		.space	1
+ 442              		.type	last_toggle_time, %object
+ 443              		.size	last_toggle_time, 4
+ 444              	last_toggle_time:
+ 445 0004 00000000 		.space	4
+ 446              		.type	left_press_start.5956, %object
+ 447              		.size	left_press_start.5956, 4
+ 448              	left_press_start.5956:
+ 449 0008 00000000 		.space	4
+ 450              		.type	left_held.5958, %object
+ 451              		.size	left_held.5958, 1
+ 452              	left_held.5958:
+ 453 000c 00       		.space	1
+ 454 000d 000000   		.space	3
+ 455              		.type	right_press_start.5957, %object
+ 456              		.size	right_press_start.5957, 4
+ 457              	right_press_start.5957:
+ 458 0010 00000000 		.space	4
+ 459              		.type	right_held.5959, %object
+ 460              		.size	right_held.5959, 1
+ 461              	right_held.5959:
+ 462 0014 00       		.space	1
+ 463              		.text
+ 464              	.Letext0:
+ 465              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 466              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 467              		.file 4 "gpio_driver.h"
+ 468              		.file 5 "pwm_driver.h"
+ 469              		.file 6 "uart_driver.h"
+ 470              		.file 7 "Generated_Source\\PSoC5/core_cm3.h"
+ 471              		.section	.debug_info,"",%progbits
+ 472              	.Ldebug_info0:
+ 473 0000 2F040000 		.4byte	0x42f
+ 474 0004 0400     		.2byte	0x4
+ 475 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 476 000a 04       		.byte	0x4
+ 477 000b 01       		.uleb128 0x1
+ 478 000c A2000000 		.4byte	.LASF41
+ 479 0010 0C       		.byte	0xc
+ 480 0011 66000000 		.4byte	.LASF42
+ 481 0015 A8020000 		.4byte	.LASF43
+ 482 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 483 001d 00000000 		.4byte	0
+ 484 0021 00000000 		.4byte	.Ldebug_line0
+ 485 0025 02       		.uleb128 0x2
+ 486 0026 01       		.byte	0x1
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 12
+
+
+ 487 0027 06       		.byte	0x6
+ 488 0028 FD020000 		.4byte	.LASF0
+ 489 002c 03       		.uleb128 0x3
+ 490 002d 25000000 		.4byte	.LASF4
+ 491 0031 02       		.byte	0x2
+ 492 0032 1D       		.byte	0x1d
+ 493 0033 37000000 		.4byte	0x37
+ 494 0037 02       		.uleb128 0x2
+ 495 0038 01       		.byte	0x1
+ 496 0039 08       		.byte	0x8
+ 497 003a 94000000 		.4byte	.LASF1
+ 498 003e 02       		.uleb128 0x2
+ 499 003f 02       		.byte	0x2
+ 500 0040 05       		.byte	0x5
+ 501 0041 7A020000 		.4byte	.LASF2
+ 502 0045 02       		.uleb128 0x2
+ 503 0046 02       		.byte	0x2
+ 504 0047 07       		.byte	0x7
+ 505 0048 42010000 		.4byte	.LASF3
+ 506 004c 03       		.uleb128 0x3
+ 507 004d 4A000000 		.4byte	.LASF5
+ 508 0051 02       		.byte	0x2
+ 509 0052 3F       		.byte	0x3f
+ 510 0053 57000000 		.4byte	0x57
+ 511 0057 02       		.uleb128 0x2
+ 512 0058 04       		.byte	0x4
+ 513 0059 05       		.byte	0x5
+ 514 005a 8D020000 		.4byte	.LASF6
+ 515 005e 03       		.uleb128 0x3
+ 516 005f BA010000 		.4byte	.LASF7
+ 517 0063 02       		.byte	0x2
+ 518 0064 41       		.byte	0x41
+ 519 0065 69000000 		.4byte	0x69
+ 520 0069 02       		.uleb128 0x2
+ 521 006a 04       		.byte	0x4
+ 522 006b 07       		.byte	0x7
+ 523 006c 30010000 		.4byte	.LASF8
+ 524 0070 02       		.uleb128 0x2
+ 525 0071 08       		.byte	0x8
+ 526 0072 05       		.byte	0x5
+ 527 0073 00000000 		.4byte	.LASF9
+ 528 0077 02       		.uleb128 0x2
+ 529 0078 08       		.byte	0x8
+ 530 0079 07       		.byte	0x7
+ 531 007a ED010000 		.4byte	.LASF10
+ 532 007e 04       		.uleb128 0x4
+ 533 007f 04       		.byte	0x4
+ 534 0080 05       		.byte	0x5
+ 535 0081 696E7400 		.ascii	"int\000"
+ 536 0085 02       		.uleb128 0x2
+ 537 0086 04       		.byte	0x4
+ 538 0087 07       		.byte	0x7
+ 539 0088 E0010000 		.4byte	.LASF11
+ 540 008c 03       		.uleb128 0x3
+ 541 008d 04020000 		.4byte	.LASF12
+ 542 0091 03       		.byte	0x3
+ 543 0092 18       		.byte	0x18
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 13
+
+
+ 544 0093 2C000000 		.4byte	0x2c
+ 545 0097 03       		.uleb128 0x3
+ 546 0098 80000000 		.4byte	.LASF13
+ 547 009c 03       		.byte	0x3
+ 548 009d 2C       		.byte	0x2c
+ 549 009e 4C000000 		.4byte	0x4c
+ 550 00a2 03       		.uleb128 0x3
+ 551 00a3 84020000 		.4byte	.LASF14
+ 552 00a7 03       		.byte	0x3
+ 553 00a8 30       		.byte	0x30
+ 554 00a9 5E000000 		.4byte	0x5e
+ 555 00ad 02       		.uleb128 0x2
+ 556 00ae 04       		.byte	0x4
+ 557 00af 04       		.byte	0x4
+ 558 00b0 8E000000 		.4byte	.LASF15
+ 559 00b4 02       		.uleb128 0x2
+ 560 00b5 08       		.byte	0x8
+ 561 00b6 04       		.byte	0x4
+ 562 00b7 9A010000 		.4byte	.LASF16
+ 563 00bb 02       		.uleb128 0x2
+ 564 00bc 01       		.byte	0x1
+ 565 00bd 08       		.byte	0x8
+ 566 00be 64020000 		.4byte	.LASF17
+ 567 00c2 02       		.uleb128 0x2
+ 568 00c3 08       		.byte	0x8
+ 569 00c4 04       		.byte	0x4
+ 570 00c5 AE010000 		.4byte	.LASF18
+ 571 00c9 02       		.uleb128 0x2
+ 572 00ca 04       		.byte	0x4
+ 573 00cb 07       		.byte	0x7
+ 574 00cc 4E020000 		.4byte	.LASF19
+ 575 00d0 05       		.uleb128 0x5
+ 576 00d1 08       		.byte	0x8
+ 577 00d2 04       		.byte	0x4
+ 578 00d3 16       		.byte	0x16
+ 579 00d4 FD000000 		.4byte	0xfd
+ 580 00d8 06       		.uleb128 0x6
+ 581 00d9 88000000 		.4byte	.LASF20
+ 582 00dd 04       		.byte	0x4
+ 583 00de 17       		.byte	0x17
+ 584 00df 8C000000 		.4byte	0x8c
+ 585 00e3 00       		.byte	0
+ 586 00e4 06       		.uleb128 0x6
+ 587 00e5 37020000 		.4byte	.LASF21
+ 588 00e9 04       		.byte	0x4
+ 589 00ea 18       		.byte	0x18
+ 590 00eb 8C000000 		.4byte	0x8c
+ 591 00ef 01       		.byte	0x1
+ 592 00f0 06       		.uleb128 0x6
+ 593 00f1 F2020000 		.4byte	.LASF22
+ 594 00f5 04       		.byte	0x4
+ 595 00f6 19       		.byte	0x19
+ 596 00f7 A2000000 		.4byte	0xa2
+ 597 00fb 04       		.byte	0x4
+ 598 00fc 00       		.byte	0
+ 599 00fd 03       		.uleb128 0x3
+ 600 00fe 2B020000 		.4byte	.LASF23
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 14
+
+
+ 601 0102 04       		.byte	0x4
+ 602 0103 1A       		.byte	0x1a
+ 603 0104 D0000000 		.4byte	0xd0
+ 604 0108 07       		.uleb128 0x7
+ 605 0109 54000000 		.4byte	.LASF44
+ 606 010d 01       		.byte	0x1
+ 607 010e 17       		.byte	0x17
+ 608 010f 00000000 		.4byte	.LFB63
+ 609 0113 14000000 		.4byte	.LFE63-.LFB63
+ 610 0117 01       		.uleb128 0x1
+ 611 0118 9C       		.byte	0x9c
+ 612 0119 08       		.uleb128 0x8
+ 613 011a 89010000 		.4byte	.LASF45
+ 614 011e 01       		.byte	0x1
+ 615 011f 1E       		.byte	0x1e
+ 616 0120 00000000 		.4byte	.LFB64
+ 617 0124 C4010000 		.4byte	.LFE64-.LFB64
+ 618 0128 01       		.uleb128 0x1
+ 619 0129 9C       		.byte	0x9c
+ 620 012a AF030000 		.4byte	0x3af
+ 621 012e 09       		.uleb128 0x9
+ 622 012f 42020000 		.4byte	.LASF24
+ 623 0133 01       		.byte	0x1
+ 624 0134 1E       		.byte	0x1e
+ 625 0135 AF030000 		.4byte	0x3af
+ 626 0139 00000000 		.4byte	.LLST0
+ 627 013d 09       		.uleb128 0x9
+ 628 013e C5010000 		.4byte	.LASF25
+ 629 0142 01       		.byte	0x1
+ 630 0143 1E       		.byte	0x1e
+ 631 0144 AF030000 		.4byte	0x3af
+ 632 0148 21000000 		.4byte	.LLST1
+ 633 014c 09       		.uleb128 0x9
+ 634 014d 2F000000 		.4byte	.LASF26
+ 635 0151 01       		.byte	0x1
+ 636 0152 1E       		.byte	0x1e
+ 637 0153 A2000000 		.4byte	0xa2
+ 638 0157 42000000 		.4byte	.LLST2
+ 639 015b 0A       		.uleb128 0xa
+ 640 015c 57020000 		.4byte	.LASF27
+ 641 0160 01       		.byte	0x1
+ 642 0161 20       		.byte	0x20
+ 643 0162 B5030000 		.4byte	0x3b5
+ 644 0166 9A000000 		.4byte	.LLST3
+ 645 016a 0A       		.uleb128 0xa
+ 646 016b 3C000000 		.4byte	.LASF28
+ 647 016f 01       		.byte	0x1
+ 648 0170 21       		.byte	0x21
+ 649 0171 B5030000 		.4byte	0x3b5
+ 650 0175 AD000000 		.4byte	.LLST4
+ 651 0179 0B       		.uleb128 0xb
+ 652 017a 69020000 		.4byte	.LASF29
+ 653 017e 01       		.byte	0x1
+ 654 017f 22       		.byte	0x22
+ 655 0180 A2000000 		.4byte	0xa2
+ 656 0184 05       		.uleb128 0x5
+ 657 0185 03       		.byte	0x3
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 15
+
+
+ 658 0186 08000000 		.4byte	left_press_start.5956
+ 659 018a 0B       		.uleb128 0xb
+ 660 018b 96020000 		.4byte	.LASF30
+ 661 018f 01       		.byte	0x1
+ 662 0190 23       		.byte	0x23
+ 663 0191 A2000000 		.4byte	0xa2
+ 664 0195 05       		.uleb128 0x5
+ 665 0196 03       		.byte	0x3
+ 666 0197 10000000 		.4byte	right_press_start.5957
+ 667 019b 0B       		.uleb128 0xb
+ 668 019c 76000000 		.4byte	.LASF31
+ 669 01a0 01       		.byte	0x1
+ 670 01a1 24       		.byte	0x24
+ 671 01a2 B5030000 		.4byte	0x3b5
+ 672 01a6 05       		.uleb128 0x5
+ 673 01a7 03       		.byte	0x3
+ 674 01a8 0C000000 		.4byte	left_held.5958
+ 675 01ac 0B       		.uleb128 0xb
+ 676 01ad 15020000 		.4byte	.LASF32
+ 677 01b1 01       		.byte	0x1
+ 678 01b2 25       		.byte	0x25
+ 679 01b3 B5030000 		.4byte	0x3b5
+ 680 01b7 05       		.uleb128 0x5
+ 681 01b8 03       		.byte	0x3
+ 682 01b9 14000000 		.4byte	right_held.5959
+ 683 01bd 0C       		.uleb128 0xc
+ 684 01be 82000000 		.4byte	.LVL11
+ 685 01c2 11040000 		.4byte	0x411
+ 686 01c6 D7010000 		.4byte	0x1d7
+ 687 01ca 0D       		.uleb128 0xd
+ 688 01cb 01       		.uleb128 0x1
+ 689 01cc 50       		.byte	0x50
+ 690 01cd 02       		.uleb128 0x2
+ 691 01ce 75       		.byte	0x75
+ 692 01cf 00       		.sleb128 0
+ 693 01d0 0D       		.uleb128 0xd
+ 694 01d1 01       		.uleb128 0x1
+ 695 01d2 51       		.byte	0x51
+ 696 01d3 02       		.uleb128 0x2
+ 697 01d4 75       		.byte	0x75
+ 698 01d5 00       		.sleb128 0
+ 699 01d6 00       		.byte	0
+ 700 01d7 0C       		.uleb128 0xc
+ 701 01d8 8A000000 		.4byte	.LVL12
+ 702 01dc 11040000 		.4byte	0x411
+ 703 01e0 F0010000 		.4byte	0x1f0
+ 704 01e4 0D       		.uleb128 0xd
+ 705 01e5 01       		.uleb128 0x1
+ 706 01e6 50       		.byte	0x50
+ 707 01e7 01       		.uleb128 0x1
+ 708 01e8 31       		.byte	0x31
+ 709 01e9 0D       		.uleb128 0xd
+ 710 01ea 01       		.uleb128 0x1
+ 711 01eb 51       		.byte	0x51
+ 712 01ec 02       		.uleb128 0x2
+ 713 01ed 75       		.byte	0x75
+ 714 01ee 00       		.sleb128 0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 16
+
+
+ 715 01ef 00       		.byte	0
+ 716 01f0 0C       		.uleb128 0xc
+ 717 01f1 90000000 		.4byte	.LVL13
+ 718 01f5 1C040000 		.4byte	0x41c
+ 719 01f9 07020000 		.4byte	0x207
+ 720 01fd 0D       		.uleb128 0xd
+ 721 01fe 01       		.uleb128 0x1
+ 722 01ff 50       		.byte	0x50
+ 723 0200 05       		.uleb128 0x5
+ 724 0201 03       		.byte	0x3
+ 725 0202 00000000 		.4byte	.LC0
+ 726 0206 00       		.byte	0
+ 727 0207 0C       		.uleb128 0xc
+ 728 0208 A4000000 		.4byte	.LVL14
+ 729 020c 1C040000 		.4byte	0x41c
+ 730 0210 1E020000 		.4byte	0x21e
+ 731 0214 0D       		.uleb128 0xd
+ 732 0215 01       		.uleb128 0x1
+ 733 0216 50       		.byte	0x50
+ 734 0217 05       		.uleb128 0x5
+ 735 0218 03       		.byte	0x3
+ 736 0219 0C000000 		.4byte	.LC1
+ 737 021d 00       		.byte	0
+ 738 021e 0C       		.uleb128 0xc
+ 739 021f C6000000 		.4byte	.LVL15
+ 740 0223 11040000 		.4byte	0x411
+ 741 0227 36020000 		.4byte	0x236
+ 742 022b 0D       		.uleb128 0xd
+ 743 022c 01       		.uleb128 0x1
+ 744 022d 50       		.byte	0x50
+ 745 022e 01       		.uleb128 0x1
+ 746 022f 31       		.byte	0x31
+ 747 0230 0D       		.uleb128 0xd
+ 748 0231 01       		.uleb128 0x1
+ 749 0232 51       		.byte	0x51
+ 750 0233 01       		.uleb128 0x1
+ 751 0234 30       		.byte	0x30
+ 752 0235 00       		.byte	0
+ 753 0236 0C       		.uleb128 0xc
+ 754 0237 CC000000 		.4byte	.LVL16
+ 755 023b 1C040000 		.4byte	0x41c
+ 756 023f 4D020000 		.4byte	0x24d
+ 757 0243 0D       		.uleb128 0xd
+ 758 0244 01       		.uleb128 0x1
+ 759 0245 50       		.byte	0x50
+ 760 0246 05       		.uleb128 0x5
+ 761 0247 03       		.byte	0x3
+ 762 0248 00000000 		.4byte	.LC0
+ 763 024c 00       		.byte	0
+ 764 024d 0C       		.uleb128 0xc
+ 765 024e D2000000 		.4byte	.LVL17
+ 766 0252 1C040000 		.4byte	0x41c
+ 767 0256 64020000 		.4byte	0x264
+ 768 025a 0D       		.uleb128 0xd
+ 769 025b 01       		.uleb128 0x1
+ 770 025c 50       		.byte	0x50
+ 771 025d 05       		.uleb128 0x5
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 17
+
+
+ 772 025e 03       		.byte	0x3
+ 773 025f 18000000 		.4byte	.LC2
+ 774 0263 00       		.byte	0
+ 775 0264 0C       		.uleb128 0xc
+ 776 0265 E6000000 		.4byte	.LVL18
+ 777 0269 11040000 		.4byte	0x411
+ 778 026d 7C020000 		.4byte	0x27c
+ 779 0271 0D       		.uleb128 0xd
+ 780 0272 01       		.uleb128 0x1
+ 781 0273 50       		.byte	0x50
+ 782 0274 01       		.uleb128 0x1
+ 783 0275 30       		.byte	0x30
+ 784 0276 0D       		.uleb128 0xd
+ 785 0277 01       		.uleb128 0x1
+ 786 0278 51       		.byte	0x51
+ 787 0279 01       		.uleb128 0x1
+ 788 027a 30       		.byte	0x30
+ 789 027b 00       		.byte	0
+ 790 027c 0C       		.uleb128 0xc
+ 791 027d EC000000 		.4byte	.LVL19
+ 792 0281 1C040000 		.4byte	0x41c
+ 793 0285 93020000 		.4byte	0x293
+ 794 0289 0D       		.uleb128 0xd
+ 795 028a 01       		.uleb128 0x1
+ 796 028b 50       		.byte	0x50
+ 797 028c 05       		.uleb128 0x5
+ 798 028d 03       		.byte	0x3
+ 799 028e 2C000000 		.4byte	.LC3
+ 800 0292 00       		.byte	0
+ 801 0293 0C       		.uleb128 0xc
+ 802 0294 FC000000 		.4byte	.LVL20
+ 803 0298 11040000 		.4byte	0x411
+ 804 029c AB020000 		.4byte	0x2ab
+ 805 02a0 0D       		.uleb128 0xd
+ 806 02a1 01       		.uleb128 0x1
+ 807 02a2 50       		.byte	0x50
+ 808 02a3 01       		.uleb128 0x1
+ 809 02a4 31       		.byte	0x31
+ 810 02a5 0D       		.uleb128 0xd
+ 811 02a6 01       		.uleb128 0x1
+ 812 02a7 51       		.byte	0x51
+ 813 02a8 01       		.uleb128 0x1
+ 814 02a9 30       		.byte	0x30
+ 815 02aa 00       		.byte	0
+ 816 02ab 0C       		.uleb128 0xc
+ 817 02ac 02010000 		.4byte	.LVL21
+ 818 02b0 1C040000 		.4byte	0x41c
+ 819 02b4 C2020000 		.4byte	0x2c2
+ 820 02b8 0D       		.uleb128 0xd
+ 821 02b9 01       		.uleb128 0x1
+ 822 02ba 50       		.byte	0x50
+ 823 02bb 05       		.uleb128 0x5
+ 824 02bc 03       		.byte	0x3
+ 825 02bd 18000000 		.4byte	.LC2
+ 826 02c1 00       		.byte	0
+ 827 02c2 0C       		.uleb128 0xc
+ 828 02c3 28010000 		.4byte	.LVL22
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 18
+
+
+ 829 02c7 11040000 		.4byte	0x411
+ 830 02cb DA020000 		.4byte	0x2da
+ 831 02cf 0D       		.uleb128 0xd
+ 832 02d0 01       		.uleb128 0x1
+ 833 02d1 50       		.byte	0x50
+ 834 02d2 01       		.uleb128 0x1
+ 835 02d3 30       		.byte	0x30
+ 836 02d4 0D       		.uleb128 0xd
+ 837 02d5 01       		.uleb128 0x1
+ 838 02d6 51       		.byte	0x51
+ 839 02d7 01       		.uleb128 0x1
+ 840 02d8 30       		.byte	0x30
+ 841 02d9 00       		.byte	0
+ 842 02da 0C       		.uleb128 0xc
+ 843 02db 2E010000 		.4byte	.LVL23
+ 844 02df 1C040000 		.4byte	0x41c
+ 845 02e3 F1020000 		.4byte	0x2f1
+ 846 02e7 0D       		.uleb128 0xd
+ 847 02e8 01       		.uleb128 0x1
+ 848 02e9 50       		.byte	0x50
+ 849 02ea 05       		.uleb128 0x5
+ 850 02eb 03       		.byte	0x3
+ 851 02ec 00000000 		.4byte	.LC0
+ 852 02f0 00       		.byte	0
+ 853 02f1 0C       		.uleb128 0xc
+ 854 02f2 34010000 		.4byte	.LVL24
+ 855 02f6 1C040000 		.4byte	0x41c
+ 856 02fa 08030000 		.4byte	0x308
+ 857 02fe 0D       		.uleb128 0xd
+ 858 02ff 01       		.uleb128 0x1
+ 859 0300 50       		.byte	0x50
+ 860 0301 05       		.uleb128 0x5
+ 861 0302 03       		.byte	0x3
+ 862 0303 40000000 		.4byte	.LC4
+ 863 0307 00       		.byte	0
+ 864 0308 0C       		.uleb128 0xc
+ 865 0309 48010000 		.4byte	.LVL25
+ 866 030d 11040000 		.4byte	0x411
+ 867 0311 20030000 		.4byte	0x320
+ 868 0315 0D       		.uleb128 0xd
+ 869 0316 01       		.uleb128 0x1
+ 870 0317 50       		.byte	0x50
+ 871 0318 01       		.uleb128 0x1
+ 872 0319 31       		.byte	0x31
+ 873 031a 0D       		.uleb128 0xd
+ 874 031b 01       		.uleb128 0x1
+ 875 031c 51       		.byte	0x51
+ 876 031d 01       		.uleb128 0x1
+ 877 031e 30       		.byte	0x30
+ 878 031f 00       		.byte	0
+ 879 0320 0C       		.uleb128 0xc
+ 880 0321 4E010000 		.4byte	.LVL26
+ 881 0325 1C040000 		.4byte	0x41c
+ 882 0329 37030000 		.4byte	0x337
+ 883 032d 0D       		.uleb128 0xd
+ 884 032e 01       		.uleb128 0x1
+ 885 032f 50       		.byte	0x50
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 19
+
+
+ 886 0330 05       		.uleb128 0x5
+ 887 0331 03       		.byte	0x3
+ 888 0332 54000000 		.4byte	.LC5
+ 889 0336 00       		.byte	0
+ 890 0337 0C       		.uleb128 0xc
+ 891 0338 60010000 		.4byte	.LVL27
+ 892 033c 11040000 		.4byte	0x411
+ 893 0340 4F030000 		.4byte	0x34f
+ 894 0344 0D       		.uleb128 0xd
+ 895 0345 01       		.uleb128 0x1
+ 896 0346 50       		.byte	0x50
+ 897 0347 01       		.uleb128 0x1
+ 898 0348 30       		.byte	0x30
+ 899 0349 0D       		.uleb128 0xd
+ 900 034a 01       		.uleb128 0x1
+ 901 034b 51       		.byte	0x51
+ 902 034c 01       		.uleb128 0x1
+ 903 034d 30       		.byte	0x30
+ 904 034e 00       		.byte	0
+ 905 034f 0C       		.uleb128 0xc
+ 906 0350 66010000 		.4byte	.LVL28
+ 907 0354 1C040000 		.4byte	0x41c
+ 908 0358 66030000 		.4byte	0x366
+ 909 035c 0D       		.uleb128 0xd
+ 910 035d 01       		.uleb128 0x1
+ 911 035e 50       		.byte	0x50
+ 912 035f 05       		.uleb128 0x5
+ 913 0360 03       		.byte	0x3
+ 914 0361 40000000 		.4byte	.LC4
+ 915 0365 00       		.byte	0
+ 916 0366 0C       		.uleb128 0xc
+ 917 0367 84010000 		.4byte	.LVL29
+ 918 036b 27040000 		.4byte	0x427
+ 919 036f 79030000 		.4byte	0x379
+ 920 0373 0D       		.uleb128 0xd
+ 921 0374 01       		.uleb128 0x1
+ 922 0375 50       		.byte	0x50
+ 923 0376 01       		.uleb128 0x1
+ 924 0377 30       		.byte	0x30
+ 925 0378 00       		.byte	0
+ 926 0379 0C       		.uleb128 0xc
+ 927 037a 8A010000 		.4byte	.LVL30
+ 928 037e 27040000 		.4byte	0x427
+ 929 0382 8C030000 		.4byte	0x38c
+ 930 0386 0D       		.uleb128 0xd
+ 931 0387 01       		.uleb128 0x1
+ 932 0388 50       		.byte	0x50
+ 933 0389 01       		.uleb128 0x1
+ 934 038a 31       		.byte	0x31
+ 935 038b 00       		.byte	0
+ 936 038c 0C       		.uleb128 0xc
+ 937 038d 98010000 		.4byte	.LVL32
+ 938 0391 27040000 		.4byte	0x427
+ 939 0395 9F030000 		.4byte	0x39f
+ 940 0399 0D       		.uleb128 0xd
+ 941 039a 01       		.uleb128 0x1
+ 942 039b 50       		.byte	0x50
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 20
+
+
+ 943 039c 01       		.uleb128 0x1
+ 944 039d 30       		.byte	0x30
+ 945 039e 00       		.byte	0
+ 946 039f 0E       		.uleb128 0xe
+ 947 03a0 A6010000 		.4byte	.LVL34
+ 948 03a4 27040000 		.4byte	0x427
+ 949 03a8 0D       		.uleb128 0xd
+ 950 03a9 01       		.uleb128 0x1
+ 951 03aa 50       		.byte	0x50
+ 952 03ab 01       		.uleb128 0x1
+ 953 03ac 31       		.byte	0x31
+ 954 03ad 00       		.byte	0
+ 955 03ae 00       		.byte	0
+ 956 03af 0F       		.uleb128 0xf
+ 957 03b0 04       		.byte	0x4
+ 958 03b1 FD000000 		.4byte	0xfd
+ 959 03b5 02       		.uleb128 0x2
+ 960 03b6 01       		.byte	0x1
+ 961 03b7 02       		.byte	0x2
+ 962 03b8 09030000 		.4byte	.LASF33
+ 963 03bc 0B       		.uleb128 0xb
+ 964 03bd 55010000 		.4byte	.LASF34
+ 965 03c1 01       		.byte	0x1
+ 966 03c2 12       		.byte	0x12
+ 967 03c3 B5030000 		.4byte	0x3b5
+ 968 03c7 05       		.uleb128 0x5
+ 969 03c8 03       		.byte	0x3
+ 970 03c9 00000000 		.4byte	left_indicator_active
+ 971 03cd 0B       		.uleb128 0xb
+ 972 03ce 0E000000 		.4byte	.LASF35
+ 973 03d2 01       		.byte	0x1
+ 974 03d3 13       		.byte	0x13
+ 975 03d4 B5030000 		.4byte	0x3b5
+ 976 03d8 05       		.uleb128 0x5
+ 977 03d9 03       		.byte	0x3
+ 978 03da 01000000 		.4byte	right_indicator_active
+ 979 03de 0B       		.uleb128 0xb
+ 980 03df D2010000 		.4byte	.LASF36
+ 981 03e3 01       		.byte	0x1
+ 982 03e4 14       		.byte	0x14
+ 983 03e5 B5030000 		.4byte	0x3b5
+ 984 03e9 05       		.uleb128 0x5
+ 985 03ea 03       		.byte	0x3
+ 986 03eb 02000000 		.4byte	hazard_active
+ 987 03ef 0B       		.uleb128 0xb
+ 988 03f0 6B010000 		.4byte	.LASF37
+ 989 03f4 01       		.byte	0x1
+ 990 03f5 15       		.byte	0x15
+ 991 03f6 A2000000 		.4byte	0xa2
+ 992 03fa 05       		.uleb128 0x5
+ 993 03fb 03       		.byte	0x3
+ 994 03fc 04000000 		.4byte	last_toggle_time
+ 995 0400 10       		.uleb128 0x10
+ 996 0401 7C010000 		.4byte	.LASF46
+ 997 0405 07       		.byte	0x7
+ 998 0406 1207     		.2byte	0x712
+ 999 0408 0C040000 		.4byte	0x40c
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 21
+
+
+ 1000 040c 11       		.uleb128 0x11
+ 1001 040d 97000000 		.4byte	0x97
+ 1002 0411 12       		.uleb128 0x12
+ 1003 0412 A1010000 		.4byte	.LASF38
+ 1004 0416 A1010000 		.4byte	.LASF38
+ 1005 041a 05       		.byte	0x5
+ 1006 041b 15       		.byte	0x15
+ 1007 041c 12       		.uleb128 0x12
+ 1008 041d 0C020000 		.4byte	.LASF39
+ 1009 0421 0C020000 		.4byte	.LASF39
+ 1010 0425 06       		.byte	0x6
+ 1011 0426 12       		.byte	0x12
+ 1012 0427 12       		.uleb128 0x12
+ 1013 0428 20020000 		.4byte	.LASF40
+ 1014 042c 20020000 		.4byte	.LASF40
+ 1015 0430 05       		.byte	0x5
+ 1016 0431 16       		.byte	0x16
+ 1017 0432 00       		.byte	0
+ 1018              		.section	.debug_abbrev,"",%progbits
+ 1019              	.Ldebug_abbrev0:
+ 1020 0000 01       		.uleb128 0x1
+ 1021 0001 11       		.uleb128 0x11
+ 1022 0002 01       		.byte	0x1
+ 1023 0003 25       		.uleb128 0x25
+ 1024 0004 0E       		.uleb128 0xe
+ 1025 0005 13       		.uleb128 0x13
+ 1026 0006 0B       		.uleb128 0xb
+ 1027 0007 03       		.uleb128 0x3
+ 1028 0008 0E       		.uleb128 0xe
+ 1029 0009 1B       		.uleb128 0x1b
+ 1030 000a 0E       		.uleb128 0xe
+ 1031 000b 55       		.uleb128 0x55
+ 1032 000c 17       		.uleb128 0x17
+ 1033 000d 11       		.uleb128 0x11
+ 1034 000e 01       		.uleb128 0x1
+ 1035 000f 10       		.uleb128 0x10
+ 1036 0010 17       		.uleb128 0x17
+ 1037 0011 00       		.byte	0
+ 1038 0012 00       		.byte	0
+ 1039 0013 02       		.uleb128 0x2
+ 1040 0014 24       		.uleb128 0x24
+ 1041 0015 00       		.byte	0
+ 1042 0016 0B       		.uleb128 0xb
+ 1043 0017 0B       		.uleb128 0xb
+ 1044 0018 3E       		.uleb128 0x3e
+ 1045 0019 0B       		.uleb128 0xb
+ 1046 001a 03       		.uleb128 0x3
+ 1047 001b 0E       		.uleb128 0xe
+ 1048 001c 00       		.byte	0
+ 1049 001d 00       		.byte	0
+ 1050 001e 03       		.uleb128 0x3
+ 1051 001f 16       		.uleb128 0x16
+ 1052 0020 00       		.byte	0
+ 1053 0021 03       		.uleb128 0x3
+ 1054 0022 0E       		.uleb128 0xe
+ 1055 0023 3A       		.uleb128 0x3a
+ 1056 0024 0B       		.uleb128 0xb
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 22
+
+
+ 1057 0025 3B       		.uleb128 0x3b
+ 1058 0026 0B       		.uleb128 0xb
+ 1059 0027 49       		.uleb128 0x49
+ 1060 0028 13       		.uleb128 0x13
+ 1061 0029 00       		.byte	0
+ 1062 002a 00       		.byte	0
+ 1063 002b 04       		.uleb128 0x4
+ 1064 002c 24       		.uleb128 0x24
+ 1065 002d 00       		.byte	0
+ 1066 002e 0B       		.uleb128 0xb
+ 1067 002f 0B       		.uleb128 0xb
+ 1068 0030 3E       		.uleb128 0x3e
+ 1069 0031 0B       		.uleb128 0xb
+ 1070 0032 03       		.uleb128 0x3
+ 1071 0033 08       		.uleb128 0x8
+ 1072 0034 00       		.byte	0
+ 1073 0035 00       		.byte	0
+ 1074 0036 05       		.uleb128 0x5
+ 1075 0037 13       		.uleb128 0x13
+ 1076 0038 01       		.byte	0x1
+ 1077 0039 0B       		.uleb128 0xb
+ 1078 003a 0B       		.uleb128 0xb
+ 1079 003b 3A       		.uleb128 0x3a
+ 1080 003c 0B       		.uleb128 0xb
+ 1081 003d 3B       		.uleb128 0x3b
+ 1082 003e 0B       		.uleb128 0xb
+ 1083 003f 01       		.uleb128 0x1
+ 1084 0040 13       		.uleb128 0x13
+ 1085 0041 00       		.byte	0
+ 1086 0042 00       		.byte	0
+ 1087 0043 06       		.uleb128 0x6
+ 1088 0044 0D       		.uleb128 0xd
+ 1089 0045 00       		.byte	0
+ 1090 0046 03       		.uleb128 0x3
+ 1091 0047 0E       		.uleb128 0xe
+ 1092 0048 3A       		.uleb128 0x3a
+ 1093 0049 0B       		.uleb128 0xb
+ 1094 004a 3B       		.uleb128 0x3b
+ 1095 004b 0B       		.uleb128 0xb
+ 1096 004c 49       		.uleb128 0x49
+ 1097 004d 13       		.uleb128 0x13
+ 1098 004e 38       		.uleb128 0x38
+ 1099 004f 0B       		.uleb128 0xb
+ 1100 0050 00       		.byte	0
+ 1101 0051 00       		.byte	0
+ 1102 0052 07       		.uleb128 0x7
+ 1103 0053 2E       		.uleb128 0x2e
+ 1104 0054 00       		.byte	0
+ 1105 0055 3F       		.uleb128 0x3f
+ 1106 0056 19       		.uleb128 0x19
+ 1107 0057 03       		.uleb128 0x3
+ 1108 0058 0E       		.uleb128 0xe
+ 1109 0059 3A       		.uleb128 0x3a
+ 1110 005a 0B       		.uleb128 0xb
+ 1111 005b 3B       		.uleb128 0x3b
+ 1112 005c 0B       		.uleb128 0xb
+ 1113 005d 27       		.uleb128 0x27
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 23
+
+
+ 1114 005e 19       		.uleb128 0x19
+ 1115 005f 11       		.uleb128 0x11
+ 1116 0060 01       		.uleb128 0x1
+ 1117 0061 12       		.uleb128 0x12
+ 1118 0062 06       		.uleb128 0x6
+ 1119 0063 40       		.uleb128 0x40
+ 1120 0064 18       		.uleb128 0x18
+ 1121 0065 9742     		.uleb128 0x2117
+ 1122 0067 19       		.uleb128 0x19
+ 1123 0068 00       		.byte	0
+ 1124 0069 00       		.byte	0
+ 1125 006a 08       		.uleb128 0x8
+ 1126 006b 2E       		.uleb128 0x2e
+ 1127 006c 01       		.byte	0x1
+ 1128 006d 3F       		.uleb128 0x3f
+ 1129 006e 19       		.uleb128 0x19
+ 1130 006f 03       		.uleb128 0x3
+ 1131 0070 0E       		.uleb128 0xe
+ 1132 0071 3A       		.uleb128 0x3a
+ 1133 0072 0B       		.uleb128 0xb
+ 1134 0073 3B       		.uleb128 0x3b
+ 1135 0074 0B       		.uleb128 0xb
+ 1136 0075 27       		.uleb128 0x27
+ 1137 0076 19       		.uleb128 0x19
+ 1138 0077 11       		.uleb128 0x11
+ 1139 0078 01       		.uleb128 0x1
+ 1140 0079 12       		.uleb128 0x12
+ 1141 007a 06       		.uleb128 0x6
+ 1142 007b 40       		.uleb128 0x40
+ 1143 007c 18       		.uleb128 0x18
+ 1144 007d 9742     		.uleb128 0x2117
+ 1145 007f 19       		.uleb128 0x19
+ 1146 0080 01       		.uleb128 0x1
+ 1147 0081 13       		.uleb128 0x13
+ 1148 0082 00       		.byte	0
+ 1149 0083 00       		.byte	0
+ 1150 0084 09       		.uleb128 0x9
+ 1151 0085 05       		.uleb128 0x5
+ 1152 0086 00       		.byte	0
+ 1153 0087 03       		.uleb128 0x3
+ 1154 0088 0E       		.uleb128 0xe
+ 1155 0089 3A       		.uleb128 0x3a
+ 1156 008a 0B       		.uleb128 0xb
+ 1157 008b 3B       		.uleb128 0x3b
+ 1158 008c 0B       		.uleb128 0xb
+ 1159 008d 49       		.uleb128 0x49
+ 1160 008e 13       		.uleb128 0x13
+ 1161 008f 02       		.uleb128 0x2
+ 1162 0090 17       		.uleb128 0x17
+ 1163 0091 00       		.byte	0
+ 1164 0092 00       		.byte	0
+ 1165 0093 0A       		.uleb128 0xa
+ 1166 0094 34       		.uleb128 0x34
+ 1167 0095 00       		.byte	0
+ 1168 0096 03       		.uleb128 0x3
+ 1169 0097 0E       		.uleb128 0xe
+ 1170 0098 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 24
+
+
+ 1171 0099 0B       		.uleb128 0xb
+ 1172 009a 3B       		.uleb128 0x3b
+ 1173 009b 0B       		.uleb128 0xb
+ 1174 009c 49       		.uleb128 0x49
+ 1175 009d 13       		.uleb128 0x13
+ 1176 009e 02       		.uleb128 0x2
+ 1177 009f 17       		.uleb128 0x17
+ 1178 00a0 00       		.byte	0
+ 1179 00a1 00       		.byte	0
+ 1180 00a2 0B       		.uleb128 0xb
+ 1181 00a3 34       		.uleb128 0x34
+ 1182 00a4 00       		.byte	0
+ 1183 00a5 03       		.uleb128 0x3
+ 1184 00a6 0E       		.uleb128 0xe
+ 1185 00a7 3A       		.uleb128 0x3a
+ 1186 00a8 0B       		.uleb128 0xb
+ 1187 00a9 3B       		.uleb128 0x3b
+ 1188 00aa 0B       		.uleb128 0xb
+ 1189 00ab 49       		.uleb128 0x49
+ 1190 00ac 13       		.uleb128 0x13
+ 1191 00ad 02       		.uleb128 0x2
+ 1192 00ae 18       		.uleb128 0x18
+ 1193 00af 00       		.byte	0
+ 1194 00b0 00       		.byte	0
+ 1195 00b1 0C       		.uleb128 0xc
+ 1196 00b2 898201   		.uleb128 0x4109
+ 1197 00b5 01       		.byte	0x1
+ 1198 00b6 11       		.uleb128 0x11
+ 1199 00b7 01       		.uleb128 0x1
+ 1200 00b8 31       		.uleb128 0x31
+ 1201 00b9 13       		.uleb128 0x13
+ 1202 00ba 01       		.uleb128 0x1
+ 1203 00bb 13       		.uleb128 0x13
+ 1204 00bc 00       		.byte	0
+ 1205 00bd 00       		.byte	0
+ 1206 00be 0D       		.uleb128 0xd
+ 1207 00bf 8A8201   		.uleb128 0x410a
+ 1208 00c2 00       		.byte	0
+ 1209 00c3 02       		.uleb128 0x2
+ 1210 00c4 18       		.uleb128 0x18
+ 1211 00c5 9142     		.uleb128 0x2111
+ 1212 00c7 18       		.uleb128 0x18
+ 1213 00c8 00       		.byte	0
+ 1214 00c9 00       		.byte	0
+ 1215 00ca 0E       		.uleb128 0xe
+ 1216 00cb 898201   		.uleb128 0x4109
+ 1217 00ce 01       		.byte	0x1
+ 1218 00cf 11       		.uleb128 0x11
+ 1219 00d0 01       		.uleb128 0x1
+ 1220 00d1 31       		.uleb128 0x31
+ 1221 00d2 13       		.uleb128 0x13
+ 1222 00d3 00       		.byte	0
+ 1223 00d4 00       		.byte	0
+ 1224 00d5 0F       		.uleb128 0xf
+ 1225 00d6 0F       		.uleb128 0xf
+ 1226 00d7 00       		.byte	0
+ 1227 00d8 0B       		.uleb128 0xb
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 25
+
+
+ 1228 00d9 0B       		.uleb128 0xb
+ 1229 00da 49       		.uleb128 0x49
+ 1230 00db 13       		.uleb128 0x13
+ 1231 00dc 00       		.byte	0
+ 1232 00dd 00       		.byte	0
+ 1233 00de 10       		.uleb128 0x10
+ 1234 00df 34       		.uleb128 0x34
+ 1235 00e0 00       		.byte	0
+ 1236 00e1 03       		.uleb128 0x3
+ 1237 00e2 0E       		.uleb128 0xe
+ 1238 00e3 3A       		.uleb128 0x3a
+ 1239 00e4 0B       		.uleb128 0xb
+ 1240 00e5 3B       		.uleb128 0x3b
+ 1241 00e6 05       		.uleb128 0x5
+ 1242 00e7 49       		.uleb128 0x49
+ 1243 00e8 13       		.uleb128 0x13
+ 1244 00e9 3F       		.uleb128 0x3f
+ 1245 00ea 19       		.uleb128 0x19
+ 1246 00eb 3C       		.uleb128 0x3c
+ 1247 00ec 19       		.uleb128 0x19
+ 1248 00ed 00       		.byte	0
+ 1249 00ee 00       		.byte	0
+ 1250 00ef 11       		.uleb128 0x11
+ 1251 00f0 35       		.uleb128 0x35
+ 1252 00f1 00       		.byte	0
+ 1253 00f2 49       		.uleb128 0x49
+ 1254 00f3 13       		.uleb128 0x13
+ 1255 00f4 00       		.byte	0
+ 1256 00f5 00       		.byte	0
+ 1257 00f6 12       		.uleb128 0x12
+ 1258 00f7 2E       		.uleb128 0x2e
+ 1259 00f8 00       		.byte	0
+ 1260 00f9 3F       		.uleb128 0x3f
+ 1261 00fa 19       		.uleb128 0x19
+ 1262 00fb 3C       		.uleb128 0x3c
+ 1263 00fc 19       		.uleb128 0x19
+ 1264 00fd 6E       		.uleb128 0x6e
+ 1265 00fe 0E       		.uleb128 0xe
+ 1266 00ff 03       		.uleb128 0x3
+ 1267 0100 0E       		.uleb128 0xe
+ 1268 0101 3A       		.uleb128 0x3a
+ 1269 0102 0B       		.uleb128 0xb
+ 1270 0103 3B       		.uleb128 0x3b
+ 1271 0104 0B       		.uleb128 0xb
+ 1272 0105 00       		.byte	0
+ 1273 0106 00       		.byte	0
+ 1274 0107 00       		.byte	0
+ 1275              		.section	.debug_loc,"",%progbits
+ 1276              	.Ldebug_loc0:
+ 1277              	.LLST0:
+ 1278 0000 00000000 		.4byte	.LVL0
+ 1279 0004 18000000 		.4byte	.LVL6
+ 1280 0008 0100     		.2byte	0x1
+ 1281 000a 50       		.byte	0x50
+ 1282 000b 18000000 		.4byte	.LVL6
+ 1283 000f C4010000 		.4byte	.LFE64
+ 1284 0013 0400     		.2byte	0x4
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 26
+
+
+ 1285 0015 F3       		.byte	0xf3
+ 1286 0016 01       		.uleb128 0x1
+ 1287 0017 50       		.byte	0x50
+ 1288 0018 9F       		.byte	0x9f
+ 1289 0019 00000000 		.4byte	0
+ 1290 001d 00000000 		.4byte	0
+ 1291              	.LLST1:
+ 1292 0021 00000000 		.4byte	.LVL0
+ 1293 0025 2E000000 		.4byte	.LVL9
+ 1294 0029 0100     		.2byte	0x1
+ 1295 002b 51       		.byte	0x51
+ 1296 002c 2E000000 		.4byte	.LVL9
+ 1297 0030 C4010000 		.4byte	.LFE64
+ 1298 0034 0400     		.2byte	0x4
+ 1299 0036 F3       		.byte	0xf3
+ 1300 0037 01       		.uleb128 0x1
+ 1301 0038 51       		.byte	0x51
+ 1302 0039 9F       		.byte	0x9f
+ 1303 003a 00000000 		.4byte	0
+ 1304 003e 00000000 		.4byte	0
+ 1305              	.LLST2:
+ 1306 0042 00000000 		.4byte	.LVL0
+ 1307 0046 0E000000 		.4byte	.LVL1
+ 1308 004a 0100     		.2byte	0x1
+ 1309 004c 52       		.byte	0x52
+ 1310 004d 0E000000 		.4byte	.LVL1
+ 1311 0051 10000000 		.4byte	.LVL2
+ 1312 0055 0100     		.2byte	0x1
+ 1313 0057 54       		.byte	0x54
+ 1314 0058 10000000 		.4byte	.LVL2
+ 1315 005c 12000000 		.4byte	.LVL3
+ 1316 0060 0100     		.2byte	0x1
+ 1317 0062 52       		.byte	0x52
+ 1318 0063 12000000 		.4byte	.LVL3
+ 1319 0067 14000000 		.4byte	.LVL4
+ 1320 006b 0100     		.2byte	0x1
+ 1321 006d 54       		.byte	0x54
+ 1322 006e 14000000 		.4byte	.LVL4
+ 1323 0072 16000000 		.4byte	.LVL5
+ 1324 0076 0100     		.2byte	0x1
+ 1325 0078 52       		.byte	0x52
+ 1326 0079 16000000 		.4byte	.LVL5
+ 1327 007d A8010000 		.4byte	.LVL35
+ 1328 0081 0100     		.2byte	0x1
+ 1329 0083 54       		.byte	0x54
+ 1330 0084 A8010000 		.4byte	.LVL35
+ 1331 0088 C4010000 		.4byte	.LFE64
+ 1332 008c 0400     		.2byte	0x4
+ 1333 008e F3       		.byte	0xf3
+ 1334 008f 01       		.uleb128 0x1
+ 1335 0090 52       		.byte	0x52
+ 1336 0091 9F       		.byte	0x9f
+ 1337 0092 00000000 		.4byte	0
+ 1338 0096 00000000 		.4byte	0
+ 1339              	.LLST3:
+ 1340 009a 16000000 		.4byte	.LVL5
+ 1341 009e 2A000000 		.4byte	.LVL8
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 27
+
+
+ 1342 00a2 0100     		.2byte	0x1
+ 1343 00a4 52       		.byte	0x52
+ 1344 00a5 00000000 		.4byte	0
+ 1345 00a9 00000000 		.4byte	0
+ 1346              	.LLST4:
+ 1347 00ad 26000000 		.4byte	.LVL7
+ 1348 00b1 34000000 		.4byte	.LVL10
+ 1349 00b5 0100     		.2byte	0x1
+ 1350 00b7 53       		.byte	0x53
+ 1351 00b8 00000000 		.4byte	0
+ 1352 00bc 00000000 		.4byte	0
+ 1353              		.section	.debug_aranges,"",%progbits
+ 1354 0000 24000000 		.4byte	0x24
+ 1355 0004 0200     		.2byte	0x2
+ 1356 0006 00000000 		.4byte	.Ldebug_info0
+ 1357 000a 04       		.byte	0x4
+ 1358 000b 00       		.byte	0
+ 1359 000c 0000     		.2byte	0
+ 1360 000e 0000     		.2byte	0
+ 1361 0010 00000000 		.4byte	.LFB63
+ 1362 0014 14000000 		.4byte	.LFE63-.LFB63
+ 1363 0018 00000000 		.4byte	.LFB64
+ 1364 001c C4010000 		.4byte	.LFE64-.LFB64
+ 1365 0020 00000000 		.4byte	0
+ 1366 0024 00000000 		.4byte	0
+ 1367              		.section	.debug_ranges,"",%progbits
+ 1368              	.Ldebug_ranges0:
+ 1369 0000 00000000 		.4byte	.LFB63
+ 1370 0004 14000000 		.4byte	.LFE63
+ 1371 0008 00000000 		.4byte	.LFB64
+ 1372 000c C4010000 		.4byte	.LFE64
+ 1373 0010 00000000 		.4byte	0
+ 1374 0014 00000000 		.4byte	0
+ 1375              		.section	.debug_line,"",%progbits
+ 1376              	.Ldebug_line0:
+ 1377 0000 14020000 		.section	.debug_str,"MS",%progbits,1
+ 1377      02007A01 
+ 1377      00000201 
+ 1377      FB0E0D00 
+ 1377      01010101 
+ 1378              	.LASF9:
+ 1379 0000 6C6F6E67 		.ascii	"long long int\000"
+ 1379      206C6F6E 
+ 1379      6720696E 
+ 1379      7400
+ 1380              	.LASF35:
+ 1381 000e 72696768 		.ascii	"right_indicator_active\000"
+ 1381      745F696E 
+ 1381      64696361 
+ 1381      746F725F 
+ 1381      61637469 
+ 1382              	.LASF4:
+ 1383 0025 5F5F7569 		.ascii	"__uint8_t\000"
+ 1383      6E74385F 
+ 1383      7400
+ 1384              	.LASF26:
+ 1385 002f 63757272 		.ascii	"current_time\000"
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 28
+
+
+ 1385      656E745F 
+ 1385      74696D65 
+ 1385      00
+ 1386              	.LASF28:
+ 1387 003c 72696768 		.ascii	"right_pressed\000"
+ 1387      745F7072 
+ 1387      65737365 
+ 1387      6400
+ 1388              	.LASF5:
+ 1389 004a 5F5F696E 		.ascii	"__int32_t\000"
+ 1389      7433325F 
+ 1389      7400
+ 1390              	.LASF44:
+ 1391 0054 496E6469 		.ascii	"IndicatorApp_Init\000"
+ 1391      6361746F 
+ 1391      72417070 
+ 1391      5F496E69 
+ 1391      7400
+ 1392              	.LASF42:
+ 1393 0066 696E6469 		.ascii	"indicator_app.c\000"
+ 1393      6361746F 
+ 1393      725F6170 
+ 1393      702E6300 
+ 1394              	.LASF31:
+ 1395 0076 6C656674 		.ascii	"left_held\000"
+ 1395      5F68656C 
+ 1395      6400
+ 1396              	.LASF13:
+ 1397 0080 696E7433 		.ascii	"int32_t\000"
+ 1397      325F7400 
+ 1398              	.LASF20:
+ 1399 0088 73746174 		.ascii	"state\000"
+ 1399      6500
+ 1400              	.LASF15:
+ 1401 008e 666C6F61 		.ascii	"float\000"
+ 1401      7400
+ 1402              	.LASF1:
+ 1403 0094 756E7369 		.ascii	"unsigned char\000"
+ 1403      676E6564 
+ 1403      20636861 
+ 1403      7200
+ 1404              	.LASF41:
+ 1405 00a2 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1405      43313120 
+ 1405      352E342E 
+ 1405      31203230 
+ 1405      31363036 
+ 1406 00d5 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 1406      20726576 
+ 1406      6973696F 
+ 1406      6E203233 
+ 1406      37373135 
+ 1407 0108 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 1407      66756E63 
+ 1407      74696F6E 
+ 1407      2D736563 
+ 1407      74696F6E 
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 29
+
+
+ 1408              	.LASF8:
+ 1409 0130 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1409      20756E73 
+ 1409      69676E65 
+ 1409      6420696E 
+ 1409      7400
+ 1410              	.LASF3:
+ 1411 0142 73686F72 		.ascii	"short unsigned int\000"
+ 1411      7420756E 
+ 1411      7369676E 
+ 1411      65642069 
+ 1411      6E7400
+ 1412              	.LASF34:
+ 1413 0155 6C656674 		.ascii	"left_indicator_active\000"
+ 1413      5F696E64 
+ 1413      69636174 
+ 1413      6F725F61 
+ 1413      63746976 
+ 1414              	.LASF37:
+ 1415 016b 6C617374 		.ascii	"last_toggle_time\000"
+ 1415      5F746F67 
+ 1415      676C655F 
+ 1415      74696D65 
+ 1415      00
+ 1416              	.LASF46:
+ 1417 017c 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 1417      52784275 
+ 1417      66666572 
+ 1417      00
+ 1418              	.LASF45:
+ 1419 0189 496E6469 		.ascii	"IndicatorApp_Run\000"
+ 1419      6361746F 
+ 1419      72417070 
+ 1419      5F52756E 
+ 1419      00
+ 1420              	.LASF16:
+ 1421 019a 646F7562 		.ascii	"double\000"
+ 1421      6C6500
+ 1422              	.LASF38:
+ 1423 01a1 50574D5F 		.ascii	"PWM_SetState\000"
+ 1423      53657453 
+ 1423      74617465 
+ 1423      00
+ 1424              	.LASF18:
+ 1425 01ae 6C6F6E67 		.ascii	"long double\000"
+ 1425      20646F75 
+ 1425      626C6500 
+ 1426              	.LASF7:
+ 1427 01ba 5F5F7569 		.ascii	"__uint32_t\000"
+ 1427      6E743332 
+ 1427      5F7400
+ 1428              	.LASF25:
+ 1429 01c5 72696768 		.ascii	"right_button\000"
+ 1429      745F6275 
+ 1429      74746F6E 
+ 1429      00
+ 1430              	.LASF36:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 30
+
+
+ 1431 01d2 68617A61 		.ascii	"hazard_active\000"
+ 1431      72645F61 
+ 1431      63746976 
+ 1431      6500
+ 1432              	.LASF11:
+ 1433 01e0 756E7369 		.ascii	"unsigned int\000"
+ 1433      676E6564 
+ 1433      20696E74 
+ 1433      00
+ 1434              	.LASF10:
+ 1435 01ed 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1435      206C6F6E 
+ 1435      6720756E 
+ 1435      7369676E 
+ 1435      65642069 
+ 1436              	.LASF12:
+ 1437 0204 75696E74 		.ascii	"uint8_t\000"
+ 1437      385F7400 
+ 1438              	.LASF39:
+ 1439 020c 55415254 		.ascii	"UART_Log\000"
+ 1439      5F4C6F67 
+ 1439      00
+ 1440              	.LASF32:
+ 1441 0215 72696768 		.ascii	"right_held\000"
+ 1441      745F6865 
+ 1441      6C6400
+ 1442              	.LASF40:
+ 1443 0220 50574D5F 		.ascii	"PWM_Toggle\000"
+ 1443      546F6767 
+ 1443      6C6500
+ 1444              	.LASF23:
+ 1445 022b 42757474 		.ascii	"ButtonState\000"
+ 1445      6F6E5374 
+ 1445      61746500 
+ 1446              	.LASF21:
+ 1447 0237 70726576 		.ascii	"prev_state\000"
+ 1447      5F737461 
+ 1447      746500
+ 1448              	.LASF24:
+ 1449 0242 6C656674 		.ascii	"left_button\000"
+ 1449      5F627574 
+ 1449      746F6E00 
+ 1450              	.LASF19:
+ 1451 024e 73697A65 		.ascii	"sizetype\000"
+ 1451      74797065 
+ 1451      00
+ 1452              	.LASF27:
+ 1453 0257 6C656674 		.ascii	"left_pressed\000"
+ 1453      5F707265 
+ 1453      73736564 
+ 1453      00
+ 1454              	.LASF17:
+ 1455 0264 63686172 		.ascii	"char\000"
+ 1455      00
+ 1456              	.LASF29:
+ 1457 0269 6C656674 		.ascii	"left_press_start\000"
+ 1457      5F707265 
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccccThye.s 			page 31
+
+
+ 1457      73735F73 
+ 1457      74617274 
+ 1457      00
+ 1458              	.LASF2:
+ 1459 027a 73686F72 		.ascii	"short int\000"
+ 1459      7420696E 
+ 1459      7400
+ 1460              	.LASF14:
+ 1461 0284 75696E74 		.ascii	"uint32_t\000"
+ 1461      33325F74 
+ 1461      00
+ 1462              	.LASF6:
+ 1463 028d 6C6F6E67 		.ascii	"long int\000"
+ 1463      20696E74 
+ 1463      00
+ 1464              	.LASF30:
+ 1465 0296 72696768 		.ascii	"right_press_start\000"
+ 1465      745F7072 
+ 1465      6573735F 
+ 1465      73746172 
+ 1465      7400
+ 1466              	.LASF43:
+ 1467 02a8 433A5C55 		.ascii	"C:\\Users\\siman\\OneDrive\\Documents\\PSoC Creator"
+ 1467      73657273 
+ 1467      5C73696D 
+ 1467      616E5C4F 
+ 1467      6E654472 
+ 1468 02d6 5C417373 		.ascii	"\\Assignment\\MoonRider.cydsn\000"
+ 1468      69676E6D 
+ 1468      656E745C 
+ 1468      4D6F6F6E 
+ 1468      52696465 
+ 1469              	.LASF22:
+ 1470 02f2 70726573 		.ascii	"press_time\000"
+ 1470      735F7469 
+ 1470      6D6500
+ 1471              	.LASF0:
+ 1472 02fd 7369676E 		.ascii	"signed char\000"
+ 1472      65642063 
+ 1472      68617200 
+ 1473              	.LASF33:
+ 1474 0309 5F426F6F 		.ascii	"_Bool\000"
+ 1474      6C00
+ 1475              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

@@ -1,0 +1,1257 @@
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"scheduler.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Scheduler_Init,"ax",%progbits
+  20              		.align	2
+  21              		.global	Scheduler_Init
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	Scheduler_Init, %function
+  25              	Scheduler_Init:
+  26              	.LFB63:
+  27              		.file 1 "scheduler.c"
+   1:scheduler.c   **** /* ========================================
+   2:scheduler.c   ****  *
+   3:scheduler.c   ****  * Copyright YOUR COMPANY, THE YEAR
+   4:scheduler.c   ****  * All Rights Reserved
+   5:scheduler.c   ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:scheduler.c   ****  *
+   7:scheduler.c   ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:scheduler.c   ****  * WHICH IS THE PROPERTY OF your company.
+   9:scheduler.c   ****  *
+  10:scheduler.c   ****  * ========================================
+  11:scheduler.c   **** */
+  12:scheduler.c   **** #include "scheduler.h"
+  13:scheduler.c   **** #include "gpio_driver.h"
+  14:scheduler.c   **** #include "uart_driver.h"
+  15:scheduler.c   **** #include "pwm_driver.h"
+  16:scheduler.c   **** #include "timer_driver.h"
+  17:scheduler.c   **** #include "indicator_control_model.h"
+  18:scheduler.c   **** #include <stdbool.h>
+  19:scheduler.c   **** 
+  20:scheduler.c   **** // Simulink model I/O variables
+  21:scheduler.c   **** boolean_T left_btn;
+  22:scheduler.c   **** boolean_T right_btn;
+  23:scheduler.c   **** boolean_T left_led_pwm;
+  24:scheduler.c   **** boolean_T right_led_pwm;
+  25:scheduler.c   **** uint8_T uart_status;
+  26:scheduler.c   **** 
+  27:scheduler.c   **** static ButtonState left_button = {0, 0, 0};
+  28:scheduler.c   **** static ButtonState right_button = {0, 0, 0};
+  29:scheduler.c   **** 
+  30:scheduler.c   **** void Scheduler_Init(void) {
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 2
+
+
+  28              		.loc 1 30 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  31:scheduler.c   ****     GPIO_Init();
+  36              		.loc 1 31 0
+  37 0002 FFF7FEFF 		bl	GPIO_Init
+  38              	.LVL0:
+  32:scheduler.c   ****     UART_Init();
+  39              		.loc 1 32 0
+  40 0006 FFF7FEFF 		bl	UART_Init
+  41              	.LVL1:
+  33:scheduler.c   ****     PWM_Init();
+  42              		.loc 1 33 0
+  43 000a FFF7FEFF 		bl	PWM_Init
+  44              	.LVL2:
+  34:scheduler.c   ****     Timer_Init();
+  45              		.loc 1 34 0
+  46 000e FFF7FEFF 		bl	Timer_Init
+  47              	.LVL3:
+  35:scheduler.c   ****     indicator_control_model_initialize();
+  48              		.loc 1 35 0
+  49 0012 FFF7FEFF 		bl	indicator_control_model_initialize
+  50              	.LVL4:
+  36:scheduler.c   ****     UART_Log("System Initialized");
+  51              		.loc 1 36 0
+  52 0016 0248     		ldr	r0, .L3
+  53 0018 FFF7FEFF 		bl	UART_Log
+  54              	.LVL5:
+  55 001c 08BD     		pop	{r3, pc}
+  56              	.L4:
+  57 001e 00BF     		.align	2
+  58              	.L3:
+  59 0020 00000000 		.word	.LC0
+  60              		.cfi_endproc
+  61              	.LFE63:
+  62              		.size	Scheduler_Init, .-Scheduler_Init
+  63              		.section	.text.Scheduler_Run,"ax",%progbits
+  64              		.align	2
+  65              		.global	Scheduler_Run
+  66              		.thumb
+  67              		.thumb_func
+  68              		.type	Scheduler_Run, %function
+  69              	Scheduler_Run:
+  70              	.LFB64:
+  37:scheduler.c   **** }
+  38:scheduler.c   **** 
+  39:scheduler.c   **** void Scheduler_Run(void) {
+  71              		.loc 1 39 0
+  72              		.cfi_startproc
+  73              		@ args = 0, pretend = 0, frame = 0
+  74              		@ frame_needed = 0, uses_anonymous_args = 0
+  75 0000 10B5     		push	{r4, lr}
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 3
+
+
+  76              		.cfi_def_cfa_offset 8
+  77              		.cfi_offset 4, -8
+  78              		.cfi_offset 14, -4
+  40:scheduler.c   ****     static uint32_t last_tick = 0;
+  41:scheduler.c   ****     uint32_t current_tick = Timer_GetTicks();
+  79              		.loc 1 41 0
+  80 0002 FFF7FEFF 		bl	Timer_GetTicks
+  81              	.LVL6:
+  42:scheduler.c   **** 
+  43:scheduler.c   ****     if (current_tick != last_tick) {
+  82              		.loc 1 43 0
+  83 0006 1B4B     		ldr	r3, .L10
+  84 0008 1B68     		ldr	r3, [r3]
+  85 000a 9842     		cmp	r0, r3
+  86 000c 30D0     		beq	.L5
+  44:scheduler.c   ****         last_tick = current_tick;
+  87              		.loc 1 44 0
+  88 000e 194C     		ldr	r4, .L10
+  89 0010 2146     		mov	r1, r4
+  90 0012 41F8040B 		str	r0, [r1], #4
+  45:scheduler.c   **** 
+  46:scheduler.c   ****         // Read buttons
+  47:scheduler.c   ****         GPIO_ReadButtons(&left_button, &right_button);
+  91              		.loc 1 47 0
+  92 0016 04F10C00 		add	r0, r4, #12
+  93              	.LVL7:
+  94 001a FFF7FEFF 		bl	GPIO_ReadButtons
+  95              	.LVL8:
+  48:scheduler.c   **** 
+  49:scheduler.c   ****         // Use button state (active-low logic)
+  50:scheduler.c   ****         left_btn = (left_button.state == BUTTON_PRESSED);
+  96              		.loc 1 50 0
+  97 001e 237B     		ldrb	r3, [r4, #12]	@ zero_extendqisi2
+  98 0020 B3FA83F3 		clz	r3, r3
+  99 0024 5B09     		lsrs	r3, r3, #5
+ 100 0026 144A     		ldr	r2, .L10+4
+ 101 0028 1370     		strb	r3, [r2]
+  51:scheduler.c   ****         right_btn = (right_button.state == BUTTON_PRESSED);
+ 102              		.loc 1 51 0
+ 103 002a 2379     		ldrb	r3, [r4, #4]	@ zero_extendqisi2
+ 104 002c B3FA83F3 		clz	r3, r3
+ 105 0030 5B09     		lsrs	r3, r3, #5
+ 106 0032 124A     		ldr	r2, .L10+8
+ 107 0034 1370     		strb	r3, [r2]
+  52:scheduler.c   **** 
+  53:scheduler.c   ****         // Call Simulink logic
+  54:scheduler.c   ****         indicator_control_model_step();
+ 108              		.loc 1 54 0
+ 109 0036 FFF7FEFF 		bl	indicator_control_model_step
+ 110              	.LVL9:
+  55:scheduler.c   **** 
+  56:scheduler.c   ****         // Update LEDs
+  57:scheduler.c   ****         GPIO_SetLED(LED_LEFT, left_led_pwm);
+ 111              		.loc 1 57 0
+ 112 003a 114B     		ldr	r3, .L10+12
+ 113 003c 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 114 003e 0020     		movs	r0, #0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 4
+
+
+ 115 0040 FFF7FEFF 		bl	GPIO_SetLED
+ 116              	.LVL10:
+  58:scheduler.c   ****         GPIO_SetLED(LED_RIGHT, right_led_pwm);
+ 117              		.loc 1 58 0
+ 118 0044 0F4B     		ldr	r3, .L10+16
+ 119 0046 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 120 0048 0120     		movs	r0, #1
+ 121 004a FFF7FEFF 		bl	GPIO_SetLED
+ 122              	.LVL11:
+  59:scheduler.c   **** 
+  60:scheduler.c   ****         // Log UART status
+  61:scheduler.c   ****         if (uart_status == 1)
+ 123              		.loc 1 61 0
+ 124 004e 0E4B     		ldr	r3, .L10+20
+ 125 0050 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 126 0052 012B     		cmp	r3, #1
+ 127 0054 03D1     		bne	.L7
+  62:scheduler.c   ****             UART_Log("Indicator ON");
+ 128              		.loc 1 62 0
+ 129 0056 0D48     		ldr	r0, .L10+24
+ 130 0058 FFF7FEFF 		bl	UART_Log
+ 131              	.LVL12:
+ 132 005c 10BD     		pop	{r4, pc}
+ 133              	.L7:
+  63:scheduler.c   ****         else if (uart_status == 2)
+ 134              		.loc 1 63 0
+ 135 005e 022B     		cmp	r3, #2
+ 136 0060 03D1     		bne	.L8
+  64:scheduler.c   ****             UART_Log("Hazard ON");
+ 137              		.loc 1 64 0
+ 138 0062 0B48     		ldr	r0, .L10+28
+ 139 0064 FFF7FEFF 		bl	UART_Log
+ 140              	.LVL13:
+ 141 0068 10BD     		pop	{r4, pc}
+ 142              	.L8:
+  65:scheduler.c   ****         else
+  66:scheduler.c   ****             UART_Log("OFF");
+ 143              		.loc 1 66 0
+ 144 006a 0A48     		ldr	r0, .L10+32
+ 145 006c FFF7FEFF 		bl	UART_Log
+ 146              	.LVL14:
+ 147              	.L5:
+ 148 0070 10BD     		pop	{r4, pc}
+ 149              	.L11:
+ 150 0072 00BF     		.align	2
+ 151              	.L10:
+ 152 0074 00000000 		.word	.LANCHOR0
+ 153 0078 00000000 		.word	left_btn
+ 154 007c 00000000 		.word	right_btn
+ 155 0080 00000000 		.word	left_led_pwm
+ 156 0084 00000000 		.word	right_led_pwm
+ 157 0088 00000000 		.word	uart_status
+ 158 008c 14000000 		.word	.LC1
+ 159 0090 24000000 		.word	.LC2
+ 160 0094 30000000 		.word	.LC3
+ 161              		.cfi_endproc
+ 162              	.LFE64:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 5
+
+
+ 163              		.size	Scheduler_Run, .-Scheduler_Run
+ 164              		.comm	uart_status,1,1
+ 165              		.comm	right_led_pwm,1,1
+ 166              		.comm	left_led_pwm,1,1
+ 167              		.comm	right_btn,1,1
+ 168              		.comm	left_btn,1,1
+ 169              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 170              		.align	2
+ 171              	.LC0:
+ 172 0000 53797374 		.ascii	"System Initialized\000"
+ 172      656D2049 
+ 172      6E697469 
+ 172      616C697A 
+ 172      656400
+ 173 0013 00       		.space	1
+ 174              	.LC1:
+ 175 0014 496E6469 		.ascii	"Indicator ON\000"
+ 175      6361746F 
+ 175      72204F4E 
+ 175      00
+ 176 0021 000000   		.space	3
+ 177              	.LC2:
+ 178 0024 48617A61 		.ascii	"Hazard ON\000"
+ 178      7264204F 
+ 178      4E00
+ 179 002e 0000     		.space	2
+ 180              	.LC3:
+ 181 0030 4F464600 		.ascii	"OFF\000"
+ 182              		.bss
+ 183              		.align	2
+ 184              		.set	.LANCHOR0,. + 0
+ 185              		.type	last_tick.6554, %object
+ 186              		.size	last_tick.6554, 4
+ 187              	last_tick.6554:
+ 188 0000 00000000 		.space	4
+ 189              		.type	right_button, %object
+ 190              		.size	right_button, 8
+ 191              	right_button:
+ 192 0004 00000000 		.space	8
+ 192      00000000 
+ 193              		.type	left_button, %object
+ 194              		.size	left_button, 8
+ 195              	left_button:
+ 196 000c 00000000 		.space	8
+ 196      00000000 
+ 197              		.text
+ 198              	.Letext0:
+ 199              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 200              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 201              		.file 4 "gpio_driver.h"
+ 202              		.file 5 "rtwtypes.h"
+ 203              		.file 6 "Generated_Source\\PSoC5/core_cm3.h"
+ 204              		.file 7 "uart_driver.h"
+ 205              		.file 8 "pwm_driver.h"
+ 206              		.file 9 "timer_driver.h"
+ 207              		.file 10 "indicator_control_model.h"
+ 208              		.section	.debug_info,"",%progbits
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 6
+
+
+ 209              	.Ldebug_info0:
+ 210 0000 30030000 		.4byte	0x330
+ 211 0004 0400     		.2byte	0x4
+ 212 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 213 000a 04       		.byte	0x4
+ 214 000b 01       		.uleb128 0x1
+ 215 000c 53010000 		.4byte	.LASF48
+ 216 0010 0C       		.byte	0xc
+ 217 0011 C1000000 		.4byte	.LASF49
+ 218 0015 D1020000 		.4byte	.LASF50
+ 219 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 220 001d 00000000 		.4byte	0
+ 221 0021 00000000 		.4byte	.Ldebug_line0
+ 222 0025 02       		.uleb128 0x2
+ 223 0026 01       		.byte	0x1
+ 224 0027 06       		.byte	0x6
+ 225 0028 26030000 		.4byte	.LASF0
+ 226 002c 03       		.uleb128 0x3
+ 227 002d 00000000 		.4byte	.LASF4
+ 228 0031 02       		.byte	0x2
+ 229 0032 1D       		.byte	0x1d
+ 230 0033 37000000 		.4byte	0x37
+ 231 0037 02       		.uleb128 0x2
+ 232 0038 01       		.byte	0x1
+ 233 0039 08       		.byte	0x8
+ 234 003a 63000000 		.4byte	.LASF1
+ 235 003e 02       		.uleb128 0x2
+ 236 003f 02       		.byte	0x2
+ 237 0040 05       		.byte	0x5
+ 238 0041 81020000 		.4byte	.LASF2
+ 239 0045 02       		.uleb128 0x2
+ 240 0046 02       		.byte	0x2
+ 241 0047 07       		.byte	0x7
+ 242 0048 83000000 		.4byte	.LASF3
+ 243 004c 03       		.uleb128 0x3
+ 244 004d 1C000000 		.4byte	.LASF5
+ 245 0051 02       		.byte	0x2
+ 246 0052 3F       		.byte	0x3f
+ 247 0053 57000000 		.4byte	0x57
+ 248 0057 02       		.uleb128 0x2
+ 249 0058 04       		.byte	0x4
+ 250 0059 05       		.byte	0x5
+ 251 005a BA020000 		.4byte	.LASF6
+ 252 005e 03       		.uleb128 0x3
+ 253 005f CD000000 		.4byte	.LASF7
+ 254 0063 02       		.byte	0x2
+ 255 0064 41       		.byte	0x41
+ 256 0065 69000000 		.4byte	0x69
+ 257 0069 02       		.uleb128 0x2
+ 258 006a 04       		.byte	0x4
+ 259 006b 07       		.byte	0x7
+ 260 006c AF000000 		.4byte	.LASF8
+ 261 0070 02       		.uleb128 0x2
+ 262 0071 08       		.byte	0x8
+ 263 0072 05       		.byte	0x5
+ 264 0073 1E020000 		.4byte	.LASF9
+ 265 0077 02       		.uleb128 0x2
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 7
+
+
+ 266 0078 08       		.byte	0x8
+ 267 0079 07       		.byte	0x7
+ 268 007a 07010000 		.4byte	.LASF10
+ 269 007e 04       		.uleb128 0x4
+ 270 007f 04       		.byte	0x4
+ 271 0080 05       		.byte	0x5
+ 272 0081 696E7400 		.ascii	"int\000"
+ 273 0085 02       		.uleb128 0x2
+ 274 0086 04       		.byte	0x4
+ 275 0087 07       		.byte	0x7
+ 276 0088 FA000000 		.4byte	.LASF11
+ 277 008c 03       		.uleb128 0x3
+ 278 008d 1E010000 		.4byte	.LASF12
+ 279 0091 03       		.byte	0x3
+ 280 0092 18       		.byte	0x18
+ 281 0093 2C000000 		.4byte	0x2c
+ 282 0097 03       		.uleb128 0x3
+ 283 0098 2D000000 		.4byte	.LASF13
+ 284 009c 03       		.byte	0x3
+ 285 009d 2C       		.byte	0x2c
+ 286 009e 4C000000 		.4byte	0x4c
+ 287 00a2 03       		.uleb128 0x3
+ 288 00a3 B1020000 		.4byte	.LASF14
+ 289 00a7 03       		.byte	0x3
+ 290 00a8 30       		.byte	0x30
+ 291 00a9 5E000000 		.4byte	0x5e
+ 292 00ad 02       		.uleb128 0x2
+ 293 00ae 04       		.byte	0x4
+ 294 00af 04       		.byte	0x4
+ 295 00b0 53000000 		.4byte	.LASF15
+ 296 00b4 02       		.uleb128 0x2
+ 297 00b5 08       		.byte	0x8
+ 298 00b6 04       		.byte	0x4
+ 299 00b7 26000000 		.4byte	.LASF16
+ 300 00bb 02       		.uleb128 0x2
+ 301 00bc 01       		.byte	0x1
+ 302 00bd 08       		.byte	0x8
+ 303 00be 43020000 		.4byte	.LASF17
+ 304 00c2 02       		.uleb128 0x2
+ 305 00c3 08       		.byte	0x8
+ 306 00c4 04       		.byte	0x4
+ 307 00c5 0A000000 		.4byte	.LASF18
+ 308 00c9 02       		.uleb128 0x2
+ 309 00ca 04       		.byte	0x4
+ 310 00cb 07       		.byte	0x7
+ 311 00cc 15020000 		.4byte	.LASF19
+ 312 00d0 05       		.uleb128 0x5
+ 313 00d1 08       		.byte	0x8
+ 314 00d2 04       		.byte	0x4
+ 315 00d3 19       		.byte	0x19
+ 316 00d4 FD000000 		.4byte	0xfd
+ 317 00d8 06       		.uleb128 0x6
+ 318 00d9 16000000 		.4byte	.LASF20
+ 319 00dd 04       		.byte	0x4
+ 320 00de 1A       		.byte	0x1a
+ 321 00df 8C000000 		.4byte	0x8c
+ 322 00e3 00       		.byte	0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 8
+
+
+ 323 00e4 06       		.uleb128 0x6
+ 324 00e5 48010000 		.4byte	.LASF21
+ 325 00e9 04       		.byte	0x4
+ 326 00ea 1B       		.byte	0x1b
+ 327 00eb 8C000000 		.4byte	0x8c
+ 328 00ef 01       		.byte	0x1
+ 329 00f0 06       		.uleb128 0x6
+ 330 00f1 1B030000 		.4byte	.LASF22
+ 331 00f5 04       		.byte	0x4
+ 332 00f6 1C       		.byte	0x1c
+ 333 00f7 A2000000 		.4byte	0xa2
+ 334 00fb 04       		.byte	0x4
+ 335 00fc 00       		.byte	0
+ 336 00fd 03       		.uleb128 0x3
+ 337 00fe 3C010000 		.4byte	.LASF23
+ 338 0102 04       		.byte	0x4
+ 339 0103 1D       		.byte	0x1d
+ 340 0104 D0000000 		.4byte	0xd0
+ 341 0108 03       		.uleb128 0x3
+ 342 0109 7B000000 		.4byte	.LASF24
+ 343 010d 05       		.byte	0x5
+ 344 010e 34       		.byte	0x34
+ 345 010f 37000000 		.4byte	0x37
+ 346 0113 03       		.uleb128 0x3
+ 347 0114 6B020000 		.4byte	.LASF25
+ 348 0118 05       		.byte	0x5
+ 349 0119 42       		.byte	0x42
+ 350 011a 37000000 		.4byte	0x37
+ 351 011e 07       		.uleb128 0x7
+ 352 011f E1000000 		.4byte	.LASF26
+ 353 0123 01       		.byte	0x1
+ 354 0124 1E       		.byte	0x1e
+ 355 0125 00000000 		.4byte	.LFB63
+ 356 0129 24000000 		.4byte	.LFE63-.LFB63
+ 357 012d 01       		.uleb128 0x1
+ 358 012e 9C       		.byte	0x9c
+ 359 012f 74010000 		.4byte	0x174
+ 360 0133 08       		.uleb128 0x8
+ 361 0134 06000000 		.4byte	.LVL0
+ 362 0138 C5020000 		.4byte	0x2c5
+ 363 013c 08       		.uleb128 0x8
+ 364 013d 0A000000 		.4byte	.LVL1
+ 365 0141 D0020000 		.4byte	0x2d0
+ 366 0145 08       		.uleb128 0x8
+ 367 0146 0E000000 		.4byte	.LVL2
+ 368 014a DB020000 		.4byte	0x2db
+ 369 014e 08       		.uleb128 0x8
+ 370 014f 12000000 		.4byte	.LVL3
+ 371 0153 E6020000 		.4byte	0x2e6
+ 372 0157 08       		.uleb128 0x8
+ 373 0158 16000000 		.4byte	.LVL4
+ 374 015c F1020000 		.4byte	0x2f1
+ 375 0160 09       		.uleb128 0x9
+ 376 0161 1C000000 		.4byte	.LVL5
+ 377 0165 FC020000 		.4byte	0x2fc
+ 378 0169 0A       		.uleb128 0xa
+ 379 016a 01       		.uleb128 0x1
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 9
+
+
+ 380 016b 50       		.byte	0x50
+ 381 016c 05       		.uleb128 0x5
+ 382 016d 03       		.byte	0x3
+ 383 016e 00000000 		.4byte	.LC0
+ 384 0172 00       		.byte	0
+ 385 0173 00       		.byte	0
+ 386 0174 07       		.uleb128 0x7
+ 387 0175 2C020000 		.4byte	.LASF27
+ 388 0179 01       		.byte	0x1
+ 389 017a 27       		.byte	0x27
+ 390 017b 00000000 		.4byte	.LFB64
+ 391 017f 98000000 		.4byte	.LFE64-.LFB64
+ 392 0183 01       		.uleb128 0x1
+ 393 0184 9C       		.byte	0x9c
+ 394 0185 3D020000 		.4byte	0x23d
+ 395 0189 0B       		.uleb128 0xb
+ 396 018a 59000000 		.4byte	.LASF28
+ 397 018e 01       		.byte	0x1
+ 398 018f 28       		.byte	0x28
+ 399 0190 A2000000 		.4byte	0xa2
+ 400 0194 05       		.uleb128 0x5
+ 401 0195 03       		.byte	0x3
+ 402 0196 00000000 		.4byte	last_tick.6554
+ 403 019a 0C       		.uleb128 0xc
+ 404 019b 95020000 		.4byte	.LASF29
+ 405 019f 01       		.byte	0x1
+ 406 01a0 29       		.byte	0x29
+ 407 01a1 A2000000 		.4byte	0xa2
+ 408 01a5 00000000 		.4byte	.LLST0
+ 409 01a9 08       		.uleb128 0x8
+ 410 01aa 06000000 		.4byte	.LVL6
+ 411 01ae 07030000 		.4byte	0x307
+ 412 01b2 0D       		.uleb128 0xd
+ 413 01b3 1E000000 		.4byte	.LVL8
+ 414 01b7 12030000 		.4byte	0x312
+ 415 01bb CC010000 		.4byte	0x1cc
+ 416 01bf 0A       		.uleb128 0xa
+ 417 01c0 01       		.uleb128 0x1
+ 418 01c1 50       		.byte	0x50
+ 419 01c2 02       		.uleb128 0x2
+ 420 01c3 74       		.byte	0x74
+ 421 01c4 0C       		.sleb128 12
+ 422 01c5 0A       		.uleb128 0xa
+ 423 01c6 01       		.uleb128 0x1
+ 424 01c7 51       		.byte	0x51
+ 425 01c8 02       		.uleb128 0x2
+ 426 01c9 74       		.byte	0x74
+ 427 01ca 04       		.sleb128 4
+ 428 01cb 00       		.byte	0
+ 429 01cc 08       		.uleb128 0x8
+ 430 01cd 3A000000 		.4byte	.LVL9
+ 431 01d1 1D030000 		.4byte	0x31d
+ 432 01d5 0D       		.uleb128 0xd
+ 433 01d6 44000000 		.4byte	.LVL10
+ 434 01da 28030000 		.4byte	0x328
+ 435 01de E8010000 		.4byte	0x1e8
+ 436 01e2 0A       		.uleb128 0xa
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 10
+
+
+ 437 01e3 01       		.uleb128 0x1
+ 438 01e4 50       		.byte	0x50
+ 439 01e5 01       		.uleb128 0x1
+ 440 01e6 30       		.byte	0x30
+ 441 01e7 00       		.byte	0
+ 442 01e8 0D       		.uleb128 0xd
+ 443 01e9 4E000000 		.4byte	.LVL11
+ 444 01ed 28030000 		.4byte	0x328
+ 445 01f1 FB010000 		.4byte	0x1fb
+ 446 01f5 0A       		.uleb128 0xa
+ 447 01f6 01       		.uleb128 0x1
+ 448 01f7 50       		.byte	0x50
+ 449 01f8 01       		.uleb128 0x1
+ 450 01f9 31       		.byte	0x31
+ 451 01fa 00       		.byte	0
+ 452 01fb 0D       		.uleb128 0xd
+ 453 01fc 5C000000 		.4byte	.LVL12
+ 454 0200 FC020000 		.4byte	0x2fc
+ 455 0204 12020000 		.4byte	0x212
+ 456 0208 0A       		.uleb128 0xa
+ 457 0209 01       		.uleb128 0x1
+ 458 020a 50       		.byte	0x50
+ 459 020b 05       		.uleb128 0x5
+ 460 020c 03       		.byte	0x3
+ 461 020d 14000000 		.4byte	.LC1
+ 462 0211 00       		.byte	0
+ 463 0212 0D       		.uleb128 0xd
+ 464 0213 68000000 		.4byte	.LVL13
+ 465 0217 FC020000 		.4byte	0x2fc
+ 466 021b 29020000 		.4byte	0x229
+ 467 021f 0A       		.uleb128 0xa
+ 468 0220 01       		.uleb128 0x1
+ 469 0221 50       		.byte	0x50
+ 470 0222 05       		.uleb128 0x5
+ 471 0223 03       		.byte	0x3
+ 472 0224 24000000 		.4byte	.LC2
+ 473 0228 00       		.byte	0
+ 474 0229 09       		.uleb128 0x9
+ 475 022a 70000000 		.4byte	.LVL14
+ 476 022e FC020000 		.4byte	0x2fc
+ 477 0232 0A       		.uleb128 0xa
+ 478 0233 01       		.uleb128 0x1
+ 479 0234 50       		.byte	0x50
+ 480 0235 05       		.uleb128 0x5
+ 481 0236 03       		.byte	0x3
+ 482 0237 30000000 		.4byte	.LC3
+ 483 023b 00       		.byte	0
+ 484 023c 00       		.byte	0
+ 485 023d 0B       		.uleb128 0xb
+ 486 023e E1010000 		.4byte	.LASF30
+ 487 0242 01       		.byte	0x1
+ 488 0243 1B       		.byte	0x1b
+ 489 0244 FD000000 		.4byte	0xfd
+ 490 0248 05       		.uleb128 0x5
+ 491 0249 03       		.byte	0x3
+ 492 024a 0C000000 		.4byte	left_button
+ 493 024e 0B       		.uleb128 0xb
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 11
+
+
+ 494 024f 2F010000 		.4byte	.LASF31
+ 495 0253 01       		.byte	0x1
+ 496 0254 1C       		.byte	0x1c
+ 497 0255 FD000000 		.4byte	0xfd
+ 498 0259 05       		.uleb128 0x5
+ 499 025a 03       		.byte	0x3
+ 500 025b 04000000 		.4byte	right_button
+ 501 025f 0E       		.uleb128 0xe
+ 502 0260 96000000 		.4byte	.LASF32
+ 503 0264 06       		.byte	0x6
+ 504 0265 1207     		.2byte	0x712
+ 505 0267 6B020000 		.4byte	0x26b
+ 506 026b 0F       		.uleb128 0xf
+ 507 026c 97000000 		.4byte	0x97
+ 508 0270 10       		.uleb128 0x10
+ 509 0271 3A020000 		.4byte	.LASF33
+ 510 0275 01       		.byte	0x1
+ 511 0276 15       		.byte	0x15
+ 512 0277 13010000 		.4byte	0x113
+ 513 027b 05       		.uleb128 0x5
+ 514 027c 03       		.byte	0x3
+ 515 027d 00000000 		.4byte	left_btn
+ 516 0281 10       		.uleb128 0x10
+ 517 0282 F0000000 		.4byte	.LASF34
+ 518 0286 01       		.byte	0x1
+ 519 0287 16       		.byte	0x16
+ 520 0288 13010000 		.4byte	0x113
+ 521 028c 05       		.uleb128 0x5
+ 522 028d 03       		.byte	0x3
+ 523 028e 00000000 		.4byte	right_btn
+ 524 0292 10       		.uleb128 0x10
+ 525 0293 35000000 		.4byte	.LASF35
+ 526 0297 01       		.byte	0x1
+ 527 0298 17       		.byte	0x17
+ 528 0299 13010000 		.4byte	0x113
+ 529 029d 05       		.uleb128 0x5
+ 530 029e 03       		.byte	0x3
+ 531 029f 00000000 		.4byte	left_led_pwm
+ 532 02a3 10       		.uleb128 0x10
+ 533 02a4 C3020000 		.4byte	.LASF36
+ 534 02a8 01       		.byte	0x1
+ 535 02a9 18       		.byte	0x18
+ 536 02aa 13010000 		.4byte	0x113
+ 537 02ae 05       		.uleb128 0x5
+ 538 02af 03       		.byte	0x3
+ 539 02b0 00000000 		.4byte	right_led_pwm
+ 540 02b4 10       		.uleb128 0x10
+ 541 02b5 A3000000 		.4byte	.LASF37
+ 542 02b9 01       		.byte	0x1
+ 543 02ba 19       		.byte	0x19
+ 544 02bb 08010000 		.4byte	0x108
+ 545 02bf 05       		.uleb128 0x5
+ 546 02c0 03       		.byte	0x3
+ 547 02c1 00000000 		.4byte	uart_status
+ 548 02c5 11       		.uleb128 0x11
+ 549 02c6 8B020000 		.4byte	.LASF38
+ 550 02ca 8B020000 		.4byte	.LASF38
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 12
+
+
+ 551 02ce 04       		.byte	0x4
+ 552 02cf 1F       		.byte	0x1f
+ 553 02d0 11       		.uleb128 0x11
+ 554 02d1 71000000 		.4byte	.LASF39
+ 555 02d5 71000000 		.4byte	.LASF39
+ 556 02d9 07       		.byte	0x7
+ 557 02da 11       		.byte	0x11
+ 558 02db 11       		.uleb128 0x11
+ 559 02dc D8000000 		.4byte	.LASF40
+ 560 02e0 D8000000 		.4byte	.LASF40
+ 561 02e4 08       		.byte	0x8
+ 562 02e5 14       		.byte	0x14
+ 563 02e6 11       		.uleb128 0x11
+ 564 02e7 0A020000 		.4byte	.LASF41
+ 565 02eb 0A020000 		.4byte	.LASF41
+ 566 02ef 09       		.byte	0x9
+ 567 02f0 11       		.byte	0x11
+ 568 02f1 11       		.uleb128 0x11
+ 569 02f2 48020000 		.4byte	.LASF42
+ 570 02f6 48020000 		.4byte	.LASF42
+ 571 02fa 0A       		.byte	0xa
+ 572 02fb 49       		.byte	0x49
+ 573 02fc 11       		.uleb128 0x11
+ 574 02fd 26010000 		.4byte	.LASF43
+ 575 0301 26010000 		.4byte	.LASF43
+ 576 0305 07       		.byte	0x7
+ 577 0306 12       		.byte	0x12
+ 578 0307 11       		.uleb128 0x11
+ 579 0308 A2020000 		.4byte	.LASF44
+ 580 030c A2020000 		.4byte	.LASF44
+ 581 0310 09       		.byte	0x9
+ 582 0311 12       		.byte	0x12
+ 583 0312 11       		.uleb128 0x11
+ 584 0313 42000000 		.4byte	.LASF45
+ 585 0317 42000000 		.4byte	.LASF45
+ 586 031b 04       		.byte	0x4
+ 587 031c 20       		.byte	0x20
+ 588 031d 11       		.uleb128 0x11
+ 589 031e ED010000 		.4byte	.LASF46
+ 590 0322 ED010000 		.4byte	.LASF46
+ 591 0326 0A       		.byte	0xa
+ 592 0327 4A       		.byte	0x4a
+ 593 0328 11       		.uleb128 0x11
+ 594 0329 75020000 		.4byte	.LASF47
+ 595 032d 75020000 		.4byte	.LASF47
+ 596 0331 04       		.byte	0x4
+ 597 0332 24       		.byte	0x24
+ 598 0333 00       		.byte	0
+ 599              		.section	.debug_abbrev,"",%progbits
+ 600              	.Ldebug_abbrev0:
+ 601 0000 01       		.uleb128 0x1
+ 602 0001 11       		.uleb128 0x11
+ 603 0002 01       		.byte	0x1
+ 604 0003 25       		.uleb128 0x25
+ 605 0004 0E       		.uleb128 0xe
+ 606 0005 13       		.uleb128 0x13
+ 607 0006 0B       		.uleb128 0xb
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 13
+
+
+ 608 0007 03       		.uleb128 0x3
+ 609 0008 0E       		.uleb128 0xe
+ 610 0009 1B       		.uleb128 0x1b
+ 611 000a 0E       		.uleb128 0xe
+ 612 000b 55       		.uleb128 0x55
+ 613 000c 17       		.uleb128 0x17
+ 614 000d 11       		.uleb128 0x11
+ 615 000e 01       		.uleb128 0x1
+ 616 000f 10       		.uleb128 0x10
+ 617 0010 17       		.uleb128 0x17
+ 618 0011 00       		.byte	0
+ 619 0012 00       		.byte	0
+ 620 0013 02       		.uleb128 0x2
+ 621 0014 24       		.uleb128 0x24
+ 622 0015 00       		.byte	0
+ 623 0016 0B       		.uleb128 0xb
+ 624 0017 0B       		.uleb128 0xb
+ 625 0018 3E       		.uleb128 0x3e
+ 626 0019 0B       		.uleb128 0xb
+ 627 001a 03       		.uleb128 0x3
+ 628 001b 0E       		.uleb128 0xe
+ 629 001c 00       		.byte	0
+ 630 001d 00       		.byte	0
+ 631 001e 03       		.uleb128 0x3
+ 632 001f 16       		.uleb128 0x16
+ 633 0020 00       		.byte	0
+ 634 0021 03       		.uleb128 0x3
+ 635 0022 0E       		.uleb128 0xe
+ 636 0023 3A       		.uleb128 0x3a
+ 637 0024 0B       		.uleb128 0xb
+ 638 0025 3B       		.uleb128 0x3b
+ 639 0026 0B       		.uleb128 0xb
+ 640 0027 49       		.uleb128 0x49
+ 641 0028 13       		.uleb128 0x13
+ 642 0029 00       		.byte	0
+ 643 002a 00       		.byte	0
+ 644 002b 04       		.uleb128 0x4
+ 645 002c 24       		.uleb128 0x24
+ 646 002d 00       		.byte	0
+ 647 002e 0B       		.uleb128 0xb
+ 648 002f 0B       		.uleb128 0xb
+ 649 0030 3E       		.uleb128 0x3e
+ 650 0031 0B       		.uleb128 0xb
+ 651 0032 03       		.uleb128 0x3
+ 652 0033 08       		.uleb128 0x8
+ 653 0034 00       		.byte	0
+ 654 0035 00       		.byte	0
+ 655 0036 05       		.uleb128 0x5
+ 656 0037 13       		.uleb128 0x13
+ 657 0038 01       		.byte	0x1
+ 658 0039 0B       		.uleb128 0xb
+ 659 003a 0B       		.uleb128 0xb
+ 660 003b 3A       		.uleb128 0x3a
+ 661 003c 0B       		.uleb128 0xb
+ 662 003d 3B       		.uleb128 0x3b
+ 663 003e 0B       		.uleb128 0xb
+ 664 003f 01       		.uleb128 0x1
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 14
+
+
+ 665 0040 13       		.uleb128 0x13
+ 666 0041 00       		.byte	0
+ 667 0042 00       		.byte	0
+ 668 0043 06       		.uleb128 0x6
+ 669 0044 0D       		.uleb128 0xd
+ 670 0045 00       		.byte	0
+ 671 0046 03       		.uleb128 0x3
+ 672 0047 0E       		.uleb128 0xe
+ 673 0048 3A       		.uleb128 0x3a
+ 674 0049 0B       		.uleb128 0xb
+ 675 004a 3B       		.uleb128 0x3b
+ 676 004b 0B       		.uleb128 0xb
+ 677 004c 49       		.uleb128 0x49
+ 678 004d 13       		.uleb128 0x13
+ 679 004e 38       		.uleb128 0x38
+ 680 004f 0B       		.uleb128 0xb
+ 681 0050 00       		.byte	0
+ 682 0051 00       		.byte	0
+ 683 0052 07       		.uleb128 0x7
+ 684 0053 2E       		.uleb128 0x2e
+ 685 0054 01       		.byte	0x1
+ 686 0055 3F       		.uleb128 0x3f
+ 687 0056 19       		.uleb128 0x19
+ 688 0057 03       		.uleb128 0x3
+ 689 0058 0E       		.uleb128 0xe
+ 690 0059 3A       		.uleb128 0x3a
+ 691 005a 0B       		.uleb128 0xb
+ 692 005b 3B       		.uleb128 0x3b
+ 693 005c 0B       		.uleb128 0xb
+ 694 005d 27       		.uleb128 0x27
+ 695 005e 19       		.uleb128 0x19
+ 696 005f 11       		.uleb128 0x11
+ 697 0060 01       		.uleb128 0x1
+ 698 0061 12       		.uleb128 0x12
+ 699 0062 06       		.uleb128 0x6
+ 700 0063 40       		.uleb128 0x40
+ 701 0064 18       		.uleb128 0x18
+ 702 0065 9742     		.uleb128 0x2117
+ 703 0067 19       		.uleb128 0x19
+ 704 0068 01       		.uleb128 0x1
+ 705 0069 13       		.uleb128 0x13
+ 706 006a 00       		.byte	0
+ 707 006b 00       		.byte	0
+ 708 006c 08       		.uleb128 0x8
+ 709 006d 898201   		.uleb128 0x4109
+ 710 0070 00       		.byte	0
+ 711 0071 11       		.uleb128 0x11
+ 712 0072 01       		.uleb128 0x1
+ 713 0073 31       		.uleb128 0x31
+ 714 0074 13       		.uleb128 0x13
+ 715 0075 00       		.byte	0
+ 716 0076 00       		.byte	0
+ 717 0077 09       		.uleb128 0x9
+ 718 0078 898201   		.uleb128 0x4109
+ 719 007b 01       		.byte	0x1
+ 720 007c 11       		.uleb128 0x11
+ 721 007d 01       		.uleb128 0x1
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 15
+
+
+ 722 007e 31       		.uleb128 0x31
+ 723 007f 13       		.uleb128 0x13
+ 724 0080 00       		.byte	0
+ 725 0081 00       		.byte	0
+ 726 0082 0A       		.uleb128 0xa
+ 727 0083 8A8201   		.uleb128 0x410a
+ 728 0086 00       		.byte	0
+ 729 0087 02       		.uleb128 0x2
+ 730 0088 18       		.uleb128 0x18
+ 731 0089 9142     		.uleb128 0x2111
+ 732 008b 18       		.uleb128 0x18
+ 733 008c 00       		.byte	0
+ 734 008d 00       		.byte	0
+ 735 008e 0B       		.uleb128 0xb
+ 736 008f 34       		.uleb128 0x34
+ 737 0090 00       		.byte	0
+ 738 0091 03       		.uleb128 0x3
+ 739 0092 0E       		.uleb128 0xe
+ 740 0093 3A       		.uleb128 0x3a
+ 741 0094 0B       		.uleb128 0xb
+ 742 0095 3B       		.uleb128 0x3b
+ 743 0096 0B       		.uleb128 0xb
+ 744 0097 49       		.uleb128 0x49
+ 745 0098 13       		.uleb128 0x13
+ 746 0099 02       		.uleb128 0x2
+ 747 009a 18       		.uleb128 0x18
+ 748 009b 00       		.byte	0
+ 749 009c 00       		.byte	0
+ 750 009d 0C       		.uleb128 0xc
+ 751 009e 34       		.uleb128 0x34
+ 752 009f 00       		.byte	0
+ 753 00a0 03       		.uleb128 0x3
+ 754 00a1 0E       		.uleb128 0xe
+ 755 00a2 3A       		.uleb128 0x3a
+ 756 00a3 0B       		.uleb128 0xb
+ 757 00a4 3B       		.uleb128 0x3b
+ 758 00a5 0B       		.uleb128 0xb
+ 759 00a6 49       		.uleb128 0x49
+ 760 00a7 13       		.uleb128 0x13
+ 761 00a8 02       		.uleb128 0x2
+ 762 00a9 17       		.uleb128 0x17
+ 763 00aa 00       		.byte	0
+ 764 00ab 00       		.byte	0
+ 765 00ac 0D       		.uleb128 0xd
+ 766 00ad 898201   		.uleb128 0x4109
+ 767 00b0 01       		.byte	0x1
+ 768 00b1 11       		.uleb128 0x11
+ 769 00b2 01       		.uleb128 0x1
+ 770 00b3 31       		.uleb128 0x31
+ 771 00b4 13       		.uleb128 0x13
+ 772 00b5 01       		.uleb128 0x1
+ 773 00b6 13       		.uleb128 0x13
+ 774 00b7 00       		.byte	0
+ 775 00b8 00       		.byte	0
+ 776 00b9 0E       		.uleb128 0xe
+ 777 00ba 34       		.uleb128 0x34
+ 778 00bb 00       		.byte	0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 16
+
+
+ 779 00bc 03       		.uleb128 0x3
+ 780 00bd 0E       		.uleb128 0xe
+ 781 00be 3A       		.uleb128 0x3a
+ 782 00bf 0B       		.uleb128 0xb
+ 783 00c0 3B       		.uleb128 0x3b
+ 784 00c1 05       		.uleb128 0x5
+ 785 00c2 49       		.uleb128 0x49
+ 786 00c3 13       		.uleb128 0x13
+ 787 00c4 3F       		.uleb128 0x3f
+ 788 00c5 19       		.uleb128 0x19
+ 789 00c6 3C       		.uleb128 0x3c
+ 790 00c7 19       		.uleb128 0x19
+ 791 00c8 00       		.byte	0
+ 792 00c9 00       		.byte	0
+ 793 00ca 0F       		.uleb128 0xf
+ 794 00cb 35       		.uleb128 0x35
+ 795 00cc 00       		.byte	0
+ 796 00cd 49       		.uleb128 0x49
+ 797 00ce 13       		.uleb128 0x13
+ 798 00cf 00       		.byte	0
+ 799 00d0 00       		.byte	0
+ 800 00d1 10       		.uleb128 0x10
+ 801 00d2 34       		.uleb128 0x34
+ 802 00d3 00       		.byte	0
+ 803 00d4 03       		.uleb128 0x3
+ 804 00d5 0E       		.uleb128 0xe
+ 805 00d6 3A       		.uleb128 0x3a
+ 806 00d7 0B       		.uleb128 0xb
+ 807 00d8 3B       		.uleb128 0x3b
+ 808 00d9 0B       		.uleb128 0xb
+ 809 00da 49       		.uleb128 0x49
+ 810 00db 13       		.uleb128 0x13
+ 811 00dc 3F       		.uleb128 0x3f
+ 812 00dd 19       		.uleb128 0x19
+ 813 00de 02       		.uleb128 0x2
+ 814 00df 18       		.uleb128 0x18
+ 815 00e0 00       		.byte	0
+ 816 00e1 00       		.byte	0
+ 817 00e2 11       		.uleb128 0x11
+ 818 00e3 2E       		.uleb128 0x2e
+ 819 00e4 00       		.byte	0
+ 820 00e5 3F       		.uleb128 0x3f
+ 821 00e6 19       		.uleb128 0x19
+ 822 00e7 3C       		.uleb128 0x3c
+ 823 00e8 19       		.uleb128 0x19
+ 824 00e9 6E       		.uleb128 0x6e
+ 825 00ea 0E       		.uleb128 0xe
+ 826 00eb 03       		.uleb128 0x3
+ 827 00ec 0E       		.uleb128 0xe
+ 828 00ed 3A       		.uleb128 0x3a
+ 829 00ee 0B       		.uleb128 0xb
+ 830 00ef 3B       		.uleb128 0x3b
+ 831 00f0 0B       		.uleb128 0xb
+ 832 00f1 00       		.byte	0
+ 833 00f2 00       		.byte	0
+ 834 00f3 00       		.byte	0
+ 835              		.section	.debug_loc,"",%progbits
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 17
+
+
+ 836              	.Ldebug_loc0:
+ 837              	.LLST0:
+ 838 0000 06000000 		.4byte	.LVL6
+ 839 0004 1A000000 		.4byte	.LVL7
+ 840 0008 0100     		.2byte	0x1
+ 841 000a 50       		.byte	0x50
+ 842 000b 1A000000 		.4byte	.LVL7
+ 843 000f 1D000000 		.4byte	.LVL8-1
+ 844 0013 0500     		.2byte	0x5
+ 845 0015 03       		.byte	0x3
+ 846 0016 00000000 		.4byte	last_tick.6554
+ 847 001a 00000000 		.4byte	0
+ 848 001e 00000000 		.4byte	0
+ 849              		.section	.debug_aranges,"",%progbits
+ 850 0000 24000000 		.4byte	0x24
+ 851 0004 0200     		.2byte	0x2
+ 852 0006 00000000 		.4byte	.Ldebug_info0
+ 853 000a 04       		.byte	0x4
+ 854 000b 00       		.byte	0
+ 855 000c 0000     		.2byte	0
+ 856 000e 0000     		.2byte	0
+ 857 0010 00000000 		.4byte	.LFB63
+ 858 0014 24000000 		.4byte	.LFE63-.LFB63
+ 859 0018 00000000 		.4byte	.LFB64
+ 860 001c 98000000 		.4byte	.LFE64-.LFB64
+ 861 0020 00000000 		.4byte	0
+ 862 0024 00000000 		.4byte	0
+ 863              		.section	.debug_ranges,"",%progbits
+ 864              	.Ldebug_ranges0:
+ 865 0000 00000000 		.4byte	.LFB63
+ 866 0004 24000000 		.4byte	.LFE63
+ 867 0008 00000000 		.4byte	.LFB64
+ 868 000c 98000000 		.4byte	.LFE64
+ 869 0010 00000000 		.4byte	0
+ 870 0014 00000000 		.4byte	0
+ 871              		.section	.debug_line,"",%progbits
+ 872              	.Ldebug_line0:
+ 873 0000 EB010000 		.section	.debug_str,"MS",%progbits,1
+ 873      0200B301 
+ 873      00000201 
+ 873      FB0E0D00 
+ 873      01010101 
+ 874              	.LASF4:
+ 875 0000 5F5F7569 		.ascii	"__uint8_t\000"
+ 875      6E74385F 
+ 875      7400
+ 876              	.LASF18:
+ 877 000a 6C6F6E67 		.ascii	"long double\000"
+ 877      20646F75 
+ 877      626C6500 
+ 878              	.LASF20:
+ 879 0016 73746174 		.ascii	"state\000"
+ 879      6500
+ 880              	.LASF5:
+ 881 001c 5F5F696E 		.ascii	"__int32_t\000"
+ 881      7433325F 
+ 881      7400
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 18
+
+
+ 882              	.LASF16:
+ 883 0026 646F7562 		.ascii	"double\000"
+ 883      6C6500
+ 884              	.LASF13:
+ 885 002d 696E7433 		.ascii	"int32_t\000"
+ 885      325F7400 
+ 886              	.LASF35:
+ 887 0035 6C656674 		.ascii	"left_led_pwm\000"
+ 887      5F6C6564 
+ 887      5F70776D 
+ 887      00
+ 888              	.LASF45:
+ 889 0042 4750494F 		.ascii	"GPIO_ReadButtons\000"
+ 889      5F526561 
+ 889      64427574 
+ 889      746F6E73 
+ 889      00
+ 890              	.LASF15:
+ 891 0053 666C6F61 		.ascii	"float\000"
+ 891      7400
+ 892              	.LASF28:
+ 893 0059 6C617374 		.ascii	"last_tick\000"
+ 893      5F746963 
+ 893      6B00
+ 894              	.LASF1:
+ 895 0063 756E7369 		.ascii	"unsigned char\000"
+ 895      676E6564 
+ 895      20636861 
+ 895      7200
+ 896              	.LASF39:
+ 897 0071 55415254 		.ascii	"UART_Init\000"
+ 897      5F496E69 
+ 897      7400
+ 898              	.LASF24:
+ 899 007b 75696E74 		.ascii	"uint8_T\000"
+ 899      385F5400 
+ 900              	.LASF3:
+ 901 0083 73686F72 		.ascii	"short unsigned int\000"
+ 901      7420756E 
+ 901      7369676E 
+ 901      65642069 
+ 901      6E7400
+ 902              	.LASF32:
+ 903 0096 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 903      52784275 
+ 903      66666572 
+ 903      00
+ 904              	.LASF37:
+ 905 00a3 75617274 		.ascii	"uart_status\000"
+ 905      5F737461 
+ 905      74757300 
+ 906              	.LASF8:
+ 907 00af 6C6F6E67 		.ascii	"long unsigned int\000"
+ 907      20756E73 
+ 907      69676E65 
+ 907      6420696E 
+ 907      7400
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 19
+
+
+ 908              	.LASF49:
+ 909 00c1 73636865 		.ascii	"scheduler.c\000"
+ 909      64756C65 
+ 909      722E6300 
+ 910              	.LASF7:
+ 911 00cd 5F5F7569 		.ascii	"__uint32_t\000"
+ 911      6E743332 
+ 911      5F7400
+ 912              	.LASF40:
+ 913 00d8 50574D5F 		.ascii	"PWM_Init\000"
+ 913      496E6974 
+ 913      00
+ 914              	.LASF26:
+ 915 00e1 53636865 		.ascii	"Scheduler_Init\000"
+ 915      64756C65 
+ 915      725F496E 
+ 915      697400
+ 916              	.LASF34:
+ 917 00f0 72696768 		.ascii	"right_btn\000"
+ 917      745F6274 
+ 917      6E00
+ 918              	.LASF11:
+ 919 00fa 756E7369 		.ascii	"unsigned int\000"
+ 919      676E6564 
+ 919      20696E74 
+ 919      00
+ 920              	.LASF10:
+ 921 0107 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 921      206C6F6E 
+ 921      6720756E 
+ 921      7369676E 
+ 921      65642069 
+ 922              	.LASF12:
+ 923 011e 75696E74 		.ascii	"uint8_t\000"
+ 923      385F7400 
+ 924              	.LASF43:
+ 925 0126 55415254 		.ascii	"UART_Log\000"
+ 925      5F4C6F67 
+ 925      00
+ 926              	.LASF31:
+ 927 012f 72696768 		.ascii	"right_button\000"
+ 927      745F6275 
+ 927      74746F6E 
+ 927      00
+ 928              	.LASF23:
+ 929 013c 42757474 		.ascii	"ButtonState\000"
+ 929      6F6E5374 
+ 929      61746500 
+ 930              	.LASF21:
+ 931 0148 70726576 		.ascii	"prev_state\000"
+ 931      5F737461 
+ 931      746500
+ 932              	.LASF48:
+ 933 0153 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 933      43313120 
+ 933      352E342E 
+ 933      31203230 
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 20
+
+
+ 933      31363036 
+ 934 0186 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 934      20726576 
+ 934      6973696F 
+ 934      6E203233 
+ 934      37373135 
+ 935 01b9 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 935      66756E63 
+ 935      74696F6E 
+ 935      2D736563 
+ 935      74696F6E 
+ 936              	.LASF30:
+ 937 01e1 6C656674 		.ascii	"left_button\000"
+ 937      5F627574 
+ 937      746F6E00 
+ 938              	.LASF46:
+ 939 01ed 696E6469 		.ascii	"indicator_control_model_step\000"
+ 939      6361746F 
+ 939      725F636F 
+ 939      6E74726F 
+ 939      6C5F6D6F 
+ 940              	.LASF41:
+ 941 020a 54696D65 		.ascii	"Timer_Init\000"
+ 941      725F496E 
+ 941      697400
+ 942              	.LASF19:
+ 943 0215 73697A65 		.ascii	"sizetype\000"
+ 943      74797065 
+ 943      00
+ 944              	.LASF9:
+ 945 021e 6C6F6E67 		.ascii	"long long int\000"
+ 945      206C6F6E 
+ 945      6720696E 
+ 945      7400
+ 946              	.LASF27:
+ 947 022c 53636865 		.ascii	"Scheduler_Run\000"
+ 947      64756C65 
+ 947      725F5275 
+ 947      6E00
+ 948              	.LASF33:
+ 949 023a 6C656674 		.ascii	"left_btn\000"
+ 949      5F62746E 
+ 949      00
+ 950              	.LASF17:
+ 951 0243 63686172 		.ascii	"char\000"
+ 951      00
+ 952              	.LASF42:
+ 953 0248 696E6469 		.ascii	"indicator_control_model_initialize\000"
+ 953      6361746F 
+ 953      725F636F 
+ 953      6E74726F 
+ 953      6C5F6D6F 
+ 954              	.LASF25:
+ 955 026b 626F6F6C 		.ascii	"boolean_T\000"
+ 955      65616E5F 
+ 955      5400
+ 956              	.LASF47:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccunjMgg.s 			page 21
+
+
+ 957 0275 4750494F 		.ascii	"GPIO_SetLED\000"
+ 957      5F536574 
+ 957      4C454400 
+ 958              	.LASF2:
+ 959 0281 73686F72 		.ascii	"short int\000"
+ 959      7420696E 
+ 959      7400
+ 960              	.LASF38:
+ 961 028b 4750494F 		.ascii	"GPIO_Init\000"
+ 961      5F496E69 
+ 961      7400
+ 962              	.LASF29:
+ 963 0295 63757272 		.ascii	"current_tick\000"
+ 963      656E745F 
+ 963      7469636B 
+ 963      00
+ 964              	.LASF44:
+ 965 02a2 54696D65 		.ascii	"Timer_GetTicks\000"
+ 965      725F4765 
+ 965      74546963 
+ 965      6B7300
+ 966              	.LASF14:
+ 967 02b1 75696E74 		.ascii	"uint32_t\000"
+ 967      33325F74 
+ 967      00
+ 968              	.LASF6:
+ 969 02ba 6C6F6E67 		.ascii	"long int\000"
+ 969      20696E74 
+ 969      00
+ 970              	.LASF36:
+ 971 02c3 72696768 		.ascii	"right_led_pwm\000"
+ 971      745F6C65 
+ 971      645F7077 
+ 971      6D00
+ 972              	.LASF50:
+ 973 02d1 433A5C55 		.ascii	"C:\\Users\\siman\\OneDrive\\Documents\\PSoC Creator"
+ 973      73657273 
+ 973      5C73696D 
+ 973      616E5C4F 
+ 973      6E654472 
+ 974 02ff 5C417373 		.ascii	"\\Assignment\\MoonRider.cydsn\000"
+ 974      69676E6D 
+ 974      656E745C 
+ 974      4D6F6F6E 
+ 974      52696465 
+ 975              	.LASF22:
+ 976 031b 70726573 		.ascii	"press_time\000"
+ 976      735F7469 
+ 976      6D6500
+ 977              	.LASF0:
+ 978 0326 7369676E 		.ascii	"signed char\000"
+ 978      65642063 
+ 978      68617200 
+ 979              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

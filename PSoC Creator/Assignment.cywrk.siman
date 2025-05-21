@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CyXmlSerializer>
+<!--This file is machine generated and read. It is not intended to be edited by hand.-->
+<!--Due to this, there is no schema for this file.-->
+<CyGuid_843a90a4-0c4b-4e44-991d-05e7fb117a21 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWrkspcCustomData" version="4">
+<CyGuid_fdba8dfd-b15b-4469-9bbb-9e40c3e70997 type_name="CyDesigner.Common.Base.CyCustomData" version="2">
+<userData>
+<dataGuid v="1b906a0f-a7b6-4e4d-a428-82f98b53cb35">
+<CyGuid_1b906a0f-a7b6-4e4d-a428-82f98b53cb35 type_name="CyDesigner.Common.ProjMgmt.GUI.CyExplorerWindow+CyExplorerWindowState" version="3" SelectedTab="Source">
+<TreeKeys>
+<v>Source</v>
+<v>Components</v>
+<v>Output</v>
+</TreeKeys>
+<TreeStates>
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="Assignment\MoonRider\drivers\gpio_driver.c">
+<ExpandedNodeIds>
+<v>Assignment</v>
+<v>Assignment\MoonRider</v>
+<v>Assignment\MoonRider\TopDesign</v>
+<v>Assignment\MoonRider\MoonRider.cydwr</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Pins</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Analog</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Clocks</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Interrupts</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\DMA</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\System</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Directives</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Flash Security</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\EEPROM</v>
+<v>Assignment\MoonRider\application</v>
+<v>Assignment\MoonRider\application\indicator_control_model.c</v>
+<v>Assignment\MoonRider\drivers</v>
+<v>Assignment\MoonRider\drivers\gpio_driver.c</v>
+<v>Assignment\MoonRider\drivers\gpio_driver.h</v>
+<v>Assignment\MoonRider\drivers\pwm_driver.c</v>
+<v>Assignment\MoonRider\drivers\pwm_driver.h</v>
+<v>Assignment\MoonRider\drivers\timer_driver.c</v>
+<v>Assignment\MoonRider\drivers\timer_driver.h</v>
+<v>Assignment\MoonRider\drivers\uart_driver.c</v>
+<v>Assignment\MoonRider\drivers\uart_driver.h</v>
+<v>Assignment\MoonRider\Header Files</v>
+<v>Assignment\MoonRider\Header Files\cyapicallbacks.h</v>
+<v>Assignment\MoonRider\scheduler</v>
+<v>Assignment\MoonRider\scheduler\scheduler.c</v>
+<v>Assignment\MoonRider\scheduler\scheduler.h</v>
+<v>Assignment\MoonRider\Source Files</v>
+<v>Assignment\MoonRider\Source Files\indicator_control_model.h</v>
+<v>Assignment\MoonRider\Source Files\indicator_control_model_types.h</v>
+<v>Assignment\MoonRider\Source Files\main.c</v>
+<v>Assignment\MoonRider\Source Files\rtwtypes.h</v>
+<v>Assignment\MoonRider\Generated_Source</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5</v>
+</ExpandedNodeIds>
+<VisibleNodeIds>
+<v>Assignment</v>
+<v>Assignment\MoonRider</v>
+<v>Assignment\MoonRider\TopDesign</v>
+<v>Assignment\MoonRider\MoonRider.cydwr</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Pins</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Analog</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Clocks</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Interrupts</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\DMA</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\System</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Directives</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\Flash Security</v>
+<v>Assignment\MoonRider\MoonRider.cydwr\EEPROM</v>
+<v>Assignment\MoonRider\application</v>
+<v>Assignment\MoonRider\application\indicator_control_model.c</v>
+<v>Assignment\MoonRider\drivers</v>
+<v>Assignment\MoonRider\drivers\gpio_driver.c</v>
+<v>Assignment\MoonRider\drivers\gpio_driver.h</v>
+<v>Assignment\MoonRider\drivers\pwm_driver.c</v>
+<v>Assignment\MoonRider\drivers\pwm_driver.h</v>
+<v>Assignment\MoonRider\drivers\timer_driver.c</v>
+<v>Assignment\MoonRider\drivers\timer_driver.h</v>
+<v>Assignment\MoonRider\drivers\uart_driver.c</v>
+<v>Assignment\MoonRider\drivers\uart_driver.h</v>
+<v>Assignment\MoonRider\Header Files</v>
+<v>Assignment\MoonRider\Header Files\cyapicallbacks.h</v>
+<v>Assignment\MoonRider\scheduler</v>
+<v>Assignment\MoonRider\scheduler\scheduler.c</v>
+<v>Assignment\MoonRider\scheduler\scheduler.h</v>
+<v>Assignment\MoonRider\Source Files</v>
+<v>Assignment\MoonRider\Source Files\indicator_control_model.h</v>
+<v>Assignment\MoonRider\Source Files\indicator_control_model_types.h</v>
+<v>Assignment\MoonRider\Source Files\main.c</v>
+<v>Assignment\MoonRider\Source Files\rtwtypes.h</v>
+<v>Assignment\MoonRider\Generated_Source</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\Clock_1</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cy_boot</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\Em_EEPROM_Dynamic</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\isr_Left_Button</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\isr_Right_Button</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\isr_Timer_1</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\Left_Button</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\Left_LED</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\PWM_1</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\PWM_2</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\Right_Button</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\Right_LED</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\Timer_1</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\timer_clock</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\UART_1</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\UART_1_IntClock</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cycodeshareexport.ld</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cycodeshareimport.ld</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cycodeshareimport.scat</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydevice.h</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydevice_trm.h</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydevicegnu.inc</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydevicegnu_trm.inc</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydeviceiar.inc</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydeviceiar_trm.inc</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydevicerv.inc</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydevicerv_trm.inc</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cydisabledsheets.h</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cyfitter.h</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cyfitter_cfg.c</v>
+<v>Assignment\MoonRider\Generated_Source\PSoC5\cyfitter_cfg.h</v>
+</VisibleNodeIds>
+</CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="">
+<ExpandedNodeIds>
+<v>Assignment</v>
+<v>Assignment\MoonRider</v>
+<v>Assignment\MoonRider\TopDesign</v>
+<v>Assignment\MoonRider\TopDesign\TopDesign.cysch</v>
+</ExpandedNodeIds>
+<VisibleNodeIds>
+<v>Assignment</v>
+<v>Assignment\MoonRider</v>
+<v>Assignment\MoonRider\TopDesign</v>
+<v>Assignment\MoonRider\TopDesign\TopDesign.cysch</v>
+</VisibleNodeIds>
+</CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="">
+<ExpandedNodeIds>
+<v>Assignment</v>
+<v>Assignment\MoonRider</v>
+<v>Assignment\MoonRider\CortexM3</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Clock_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Cm3Start.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cy_em_eeprom.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CyBootAsmGnu.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CyDmac.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cyfitter_cfg.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CyFlash.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CyLib.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cymetadata.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cyPm.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CySpc.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cyutils.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\gpio_driver.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\indicator_control_model.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\isr_Left_Button.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\isr_Right_Button.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\isr_Timer_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Left_Button.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Left_LED.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\main.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\PWM_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\PWM_1_PM.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\PWM_2.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\PWM_2_PM.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\pwm_driver.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Right_Button.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Right_LED.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\scheduler.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Timer_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Timer_1_PM.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\timer_clock.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\timer_driver.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1_BOOT.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1_INT.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1_IntClock.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1_PM.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\uart_driver.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\MoonRider.elf</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\MoonRider.hex</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\MoonRider.map</v>
+<v>Assignment\MoonRider\MoonRider.gpdsc</v>
+<v>Assignment\MoonRider\MoonRider.rpt</v>
+<v>Assignment\MoonRider\MoonRider_timing.html</v>
+</ExpandedNodeIds>
+<VisibleNodeIds>
+<v>Assignment</v>
+<v>Assignment\MoonRider</v>
+<v>Assignment\MoonRider\CortexM3</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Clock_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Cm3Start.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cy_em_eeprom.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CyBootAsmGnu.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CyDmac.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cyfitter_cfg.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CyFlash.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CyLib.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cymetadata.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cyPm.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\CySpc.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\cyutils.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\gpio_driver.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\indicator_control_model.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\isr_Left_Button.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\isr_Right_Button.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\isr_Timer_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Left_Button.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Left_LED.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\main.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\PWM_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\PWM_1_PM.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\PWM_2.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\PWM_2_PM.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\pwm_driver.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Right_Button.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Right_LED.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\scheduler.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Timer_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\Timer_1_PM.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\timer_clock.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\timer_driver.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1_BOOT.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1_INT.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1_IntClock.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\UART_1_PM.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\Listing Files\uart_driver.lst</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\MoonRider.elf</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\MoonRider.hex</v>
+<v>Assignment\MoonRider\CortexM3\ARM_GCC_541\Debug\MoonRider.map</v>
+<v>Assignment\MoonRider\MoonRider.gpdsc</v>
+<v>Assignment\MoonRider\MoonRider.rpt</v>
+<v>Assignment\MoonRider\MoonRider_timing.html</v>
+</VisibleNodeIds>
+</CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
+</TreeStates>
+<TreeKeysV2>
+<v>Datasheet</v>
+</TreeKeysV2>
+<TreeStatesV2>
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="">
+<ExpandedNodeIds>
+<v>Assignment</v>
+<v>Assignment\MoonRider</v>
+<v>Assignment\MoonRider\PSoC 5LP Architecture TRM</v>
+<v>Assignment\MoonRider\CY8C58LP Family Datasheet</v>
+<v>Assignment\MoonRider\System Reference Guides</v>
+<v>Assignment\MoonRider\System Reference Guides\cy_boot_v6_10</v>
+<v>Assignment\MoonRider\cy_clock_v2_20</v>
+<v>Assignment\MoonRider\cy_clock_v2_20\cy_clock_v2_20.pdf</v>
+<v>Assignment\MoonRider\cy_isr_v1_71</v>
+<v>Assignment\MoonRider\cy_isr_v1_71\cy_isr_v1_71.pdf</v>
+<v>Assignment\MoonRider\cy_pins_v2_20</v>
+<v>Assignment\MoonRider\cy_pins_v2_20\cy_pins_v2_20.pdf</v>
+<v>Assignment\MoonRider\PWM_v3_30</v>
+<v>Assignment\MoonRider\PWM_v3_30\PWM_v3_30.pdf</v>
+<v>Assignment\MoonRider\Timer_v2_80.pdf</v>
+<v>Assignment\MoonRider\UART_v2_50.pdf</v>
+<v>Assignment\MoonRider\ZeroTerminal.pdf</v>
+</ExpandedNodeIds>
+<VisibleNodeIds>
+<v>Assignment</v>
+<v>Assignment\MoonRider</v>
+<v>Assignment\MoonRider\PSoC 5LP Architecture TRM</v>
+<v>Assignment\MoonRider\CY8C58LP Family Datasheet</v>
+<v>Assignment\MoonRider\System Reference Guides</v>
+<v>Assignment\MoonRider\System Reference Guides\cy_boot_v6_10</v>
+<v>Assignment\MoonRider\cy_clock_v2_20</v>
+<v>Assignment\MoonRider\cy_clock_v2_20\cy_clock_v2_20.pdf</v>
+<v>Assignment\MoonRider\cy_isr_v1_71</v>
+<v>Assignment\MoonRider\cy_isr_v1_71\cy_isr_v1_71.pdf</v>
+<v>Assignment\MoonRider\cy_pins_v2_20</v>
+<v>Assignment\MoonRider\cy_pins_v2_20\cy_pins_v2_20.pdf</v>
+<v>Assignment\MoonRider\PWM_v3_30</v>
+<v>Assignment\MoonRider\PWM_v3_30\PWM_v3_30.pdf</v>
+<v>Assignment\MoonRider\Timer_v2_80.pdf</v>
+<v>Assignment\MoonRider\UART_v2_50.pdf</v>
+<v>Assignment\MoonRider\ZeroTerminal.pdf</v>
+</VisibleNodeIds>
+</CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
+</TreeStatesV2>
+</CyGuid_1b906a0f-a7b6-4e4d-a428-82f98b53cb35>
+</dataGuid>
+<dataGuid v="6c335137-fa19-46ce-bc2d-2fbeb6d5f2a2">
+<CyGuid_70084457-cd6a-4593-9ed0-7f6eeb432dc2 type_name="CyDesigner.Common.ProjMgmt.GUI.CyDependenciesCustomData" version="1">
+<dictName v=".\MoonRider.cydsn\MoonRider.cyprj">
+<listName />
+</dictName>
+</CyGuid_70084457-cd6a-4593-9ed0-7f6eeb432dc2>
+</dataGuid>
+</userData>
+</CyGuid_fdba8dfd-b15b-4469-9bbb-9e40c3e70997>
+<Unloaded />
+<OpenDocs>
+<name v=".\MoonRider.cydsn\TopDesign\TopDesign.cysch" />
+<name v=".\MoonRider.cydsn\main.c" />
+<name v=".\MoonRider.cydsn\MoonRider.cydwr" />
+<name v=".\MoonRider.cydsn\Generated_Source\PSoC5\Timer_1.h" />
+<name v=".\MoonRider.cydsn\gpio_driver.h" />
+<name v=".\MoonRider.cydsn\gpio_driver.c" />
+<name v=".\MoonRider.cydsn\uart_driver.h" />
+<name v=".\MoonRider.cydsn\uart_driver.c" />
+<name v=".\MoonRider.cydsn\pwm_driver.h" />
+<name v=".\MoonRider.cydsn\pwm_driver.c" />
+<name v=".\MoonRider.cydsn\timer_driver.h" />
+<name v=".\MoonRider.cydsn\timer_driver.c" />
+<name v=".\MoonRider.cydsn\scheduler.h" />
+<name v=".\MoonRider.cydsn\scheduler.c" />
+</OpenDocs>
+<OpenDocsLayout><![CDATA[<?xml version="1.0"?><!--
+
+  Actipro Docking/MDI for WinForms
+  Copyright (c) 2001-2016 Actipro Software LLC.  All rights reserved.
+  http://www.actiprosoftware.com
+
+--><DocumentLayout Version="1.0"><LayoutData><TabbedMdiRootContainer Orientation="Horizontal"><TabbedMdiContainer Size="2010, 957" SelectedTabbedMdiWindow="cc1e7744-ff03-4409-b094-b87774764fc6"><ToolWindow Key="Start Page:bd4649ab-da6b-4d04-a663-c722b8bf99db:Start Page" Guid="05f20a68-d642-4061-a882-3f2b51181eb6" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\TopDesign\TopDesign.cysch" Guid="c86ee4e5-6e09-47e2-82d8-2e3ee45fec52" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\main.c" Guid="cc1e7744-ff03-4409-b094-b87774764fc6" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\MoonRider.cydwr" Guid="71518a78-706f-47f9-b103-3726f6a6731e" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\Generated_Source\PSoC5\Timer_1.h" Guid="69f8be48-9e65-41e2-8ce9-3f785ad5a9e6" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\gpio_driver.h" Guid="6d79879a-bc62-4f48-a446-5f264a0fe2f5" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\gpio_driver.c" Guid="3ff032c0-2b41-4b55-a5df-2b30b3f56fb7" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\uart_driver.h" Guid="80638033-ba52-441c-a5f4-2dc23d119eca" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\uart_driver.c" Guid="2861f9c4-1041-462b-a049-ebeaf7a4cb5f" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\pwm_driver.h" Guid="f4e01469-dab6-4e0b-b36e-ae59b7956bc3" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\pwm_driver.c" Guid="1193b4e2-541a-4423-8531-08d8af87bead" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\timer_driver.h" Guid="77349bca-b69f-43b3-a114-b0936f28c93e" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\timer_driver.c" Guid="97d98cd8-21e2-4b4b-bae6-cf1c70f25b3f" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\scheduler.h" Guid="a955441a-f54e-43bb-b537-6dd735979ec1" /><DocumentWindow Key="C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\scheduler.c" Guid="19d8b16a-8ab5-4d60-b8a0-2ba4d5bcd7d5" /></TabbedMdiContainer></TabbedMdiRootContainer><FloatingContainers /></LayoutData></DocumentLayout>]]></OpenDocsLayout>
+<config v="" />
+<AutoUpdate v="true" />
+</CyGuid_843a90a4-0c4b-4e44-991d-05e7fb117a21>
+</CyXmlSerializer>

@@ -1,0 +1,6 @@
+C:\Users\siman\OneDrive\Documents\PSoC Creator\Assignment\MoonRider.cydsn\MoonRider.cyprj|498854bf-30e8-4e77-bb9c-1ea472ca82e0
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|b257a171-5b58-4434-87a0-af313072d7b4
+C:\Users\siman\OneDrive\Documents\PSoC Creator\4.4\Downloads ( 4.4).cylib\Downloads ( 4.4).cyprj|e1ff183c-3ade-4d51-a8f5-73ae852b4a2c
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|04e0e6b0-2774-488b-8353-ab90e607f7b9
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|37d750ee-2e06-411f-b856-a4beab592f59
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|d0a0805f-6230-4135-a266-702047db6a5d

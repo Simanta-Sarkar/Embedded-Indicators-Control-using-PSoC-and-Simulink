@@ -1,0 +1,965 @@
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"gpio_driver.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.GPIO_Init,"ax",%progbits
+  20              		.align	2
+  21              		.global	GPIO_Init
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	GPIO_Init, %function
+  25              	GPIO_Init:
+  26              	.LFB63:
+  27              		.file 1 "gpio_driver.c"
+   1:gpio_driver.c **** /* ========================================
+   2:gpio_driver.c ****  *
+   3:gpio_driver.c ****  * Copyright YOUR COMPANY, THE YEAR
+   4:gpio_driver.c ****  * All Rights Reserved
+   5:gpio_driver.c ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:gpio_driver.c ****  *
+   7:gpio_driver.c ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:gpio_driver.c ****  * WHICH IS THE PROPERTY OF your company.
+   9:gpio_driver.c ****  *
+  10:gpio_driver.c ****  * ========================================
+  11:gpio_driver.c **** */
+  12:gpio_driver.c **** #include "gpio_driver.h"
+  13:gpio_driver.c **** 
+  14:gpio_driver.c **** void GPIO_Init(void) {
+  28              		.loc 1 14 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 7047     		bx	lr
+  34              		.cfi_endproc
+  35              	.LFE63:
+  36              		.size	GPIO_Init, .-GPIO_Init
+  37 0002 00BF     		.section	.text.GPIO_ReadButtons,"ax",%progbits
+  38              		.align	2
+  39              		.global	GPIO_ReadButtons
+  40              		.thumb
+  41              		.thumb_func
+  42              		.type	GPIO_ReadButtons, %function
+  43              	GPIO_ReadButtons:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 2
+
+
+  44              	.LFB64:
+  15:gpio_driver.c ****     // You can initialize pins here if needed, or leave empty
+  16:gpio_driver.c **** }
+  17:gpio_driver.c **** 
+  18:gpio_driver.c **** void GPIO_ReadButtons(ButtonState *left, ButtonState *right) {
+  45              		.loc 1 18 0
+  46              		.cfi_startproc
+  47              		@ args = 0, pretend = 0, frame = 0
+  48              		@ frame_needed = 0, uses_anonymous_args = 0
+  49              	.LVL0:
+  50              		.loc 1 18 0
+  51 0000 38B5     		push	{r3, r4, r5, lr}
+  52              		.cfi_def_cfa_offset 16
+  53              		.cfi_offset 3, -16
+  54              		.cfi_offset 4, -12
+  55              		.cfi_offset 5, -8
+  56              		.cfi_offset 14, -4
+  57 0002 0546     		mov	r5, r0
+  58 0004 0C46     		mov	r4, r1
+  19:gpio_driver.c ****     left->prev_state = left->state;
+  59              		.loc 1 19 0
+  60 0006 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+  61 0008 4370     		strb	r3, [r0, #1]
+  20:gpio_driver.c ****     right->prev_state = right->state;
+  62              		.loc 1 20 0
+  63 000a 0B78     		ldrb	r3, [r1]	@ zero_extendqisi2
+  64 000c 4B70     		strb	r3, [r1, #1]
+  21:gpio_driver.c **** 
+  22:gpio_driver.c ****     // Active-low buttons: 0 = pressed, 1 = not pressed
+  23:gpio_driver.c ****     left->state = Left_Button_Read();
+  65              		.loc 1 23 0
+  66 000e FFF7FEFF 		bl	Left_Button_Read
+  67              	.LVL1:
+  68 0012 2870     		strb	r0, [r5]
+  24:gpio_driver.c ****     right->state = Right_Button_Read();
+  69              		.loc 1 24 0
+  70 0014 FFF7FEFF 		bl	Right_Button_Read
+  71              	.LVL2:
+  72 0018 2070     		strb	r0, [r4]
+  73 001a 38BD     		pop	{r3, r4, r5, pc}
+  74              		.cfi_endproc
+  75              	.LFE64:
+  76              		.size	GPIO_ReadButtons, .-GPIO_ReadButtons
+  77              		.section	.text.GPIO_SetLED,"ax",%progbits
+  78              		.align	2
+  79              		.global	GPIO_SetLED
+  80              		.thumb
+  81              		.thumb_func
+  82              		.type	GPIO_SetLED, %function
+  83              	GPIO_SetLED:
+  84              	.LFB65:
+  25:gpio_driver.c **** }
+  26:gpio_driver.c **** 
+  27:gpio_driver.c **** void GPIO_SetLED(uint8_t led_id, uint8_t state) {
+  85              		.loc 1 27 0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 3
+
+
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89              	.LVL3:
+  90 0000 10B5     		push	{r4, lr}
+  91              		.cfi_def_cfa_offset 8
+  92              		.cfi_offset 4, -8
+  93              		.cfi_offset 14, -4
+  94 0002 0C46     		mov	r4, r1
+  28:gpio_driver.c ****     if (led_id == LED_LEFT) {
+  95              		.loc 1 28 0
+  96 0004 28B9     		cbnz	r0, .L5
+  29:gpio_driver.c ****         PWM_1_Enable();
+  97              		.loc 1 29 0
+  98 0006 FFF7FEFF 		bl	PWM_1_Enable
+  99              	.LVL4:
+  30:gpio_driver.c ****         if (!state) PWM_1_Stop();
+ 100              		.loc 1 30 0
+ 101 000a 4CB9     		cbnz	r4, .L4
+ 102              		.loc 1 30 0 is_stmt 0 discriminator 1
+ 103 000c FFF7FEFF 		bl	PWM_1_Stop
+ 104              	.LVL5:
+ 105 0010 10BD     		pop	{r4, pc}
+ 106              	.LVL6:
+ 107              	.L5:
+  31:gpio_driver.c ****     } else if (led_id == LED_RIGHT) {
+ 108              		.loc 1 31 0 is_stmt 1
+ 109 0012 0128     		cmp	r0, #1
+ 110 0014 04D1     		bne	.L4
+  32:gpio_driver.c ****         PWM_2_Enable();
+ 111              		.loc 1 32 0
+ 112 0016 FFF7FEFF 		bl	PWM_2_Enable
+ 113              	.LVL7:
+  33:gpio_driver.c ****         if (!state) PWM_2_Stop();
+ 114              		.loc 1 33 0
+ 115 001a 0CB9     		cbnz	r4, .L4
+ 116              		.loc 1 33 0 is_stmt 0 discriminator 1
+ 117 001c FFF7FEFF 		bl	PWM_2_Stop
+ 118              	.LVL8:
+ 119              	.L4:
+ 120 0020 10BD     		pop	{r4, pc}
+ 121              		.cfi_endproc
+ 122              	.LFE65:
+ 123              		.size	GPIO_SetLED, .-GPIO_SetLED
+ 124 0022 00BF     		.text
+ 125              	.Letext0:
+ 126              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 127              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 128              		.file 4 "gpio_driver.h"
+ 129              		.file 5 "Generated_Source\\PSoC5/Left_Button.h"
+ 130              		.file 6 "Generated_Source\\PSoC5/Right_Button.h"
+ 131              		.file 7 "Generated_Source\\PSoC5/PWM_1.h"
+ 132              		.file 8 "Generated_Source\\PSoC5/PWM_2.h"
+ 133              		.file 9 "Generated_Source\\PSoC5/core_cm3.h"
+ 134              		.section	.debug_info,"",%progbits
+ 135              	.Ldebug_info0:
+ 136 0000 0D020000 		.4byte	0x20d
+ 137 0004 0400     		.2byte	0x4
+ 138 0006 00000000 		.4byte	.Ldebug_abbrev0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 4
+
+
+ 139 000a 04       		.byte	0x4
+ 140 000b 01       		.uleb128 0x1
+ 141 000c 91000000 		.4byte	.LASF35
+ 142 0010 0C       		.byte	0xc
+ 143 0011 2C000000 		.4byte	.LASF36
+ 144 0015 29020000 		.4byte	.LASF37
+ 145 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 146 001d 00000000 		.4byte	0
+ 147 0021 00000000 		.4byte	.Ldebug_line0
+ 148 0025 02       		.uleb128 0x2
+ 149 0026 01       		.byte	0x1
+ 150 0027 06       		.byte	0x6
+ 151 0028 7E020000 		.4byte	.LASF0
+ 152 002c 03       		.uleb128 0x3
+ 153 002d 0D000000 		.4byte	.LASF4
+ 154 0031 02       		.byte	0x2
+ 155 0032 1D       		.byte	0x1d
+ 156 0033 37000000 		.4byte	0x37
+ 157 0037 02       		.uleb128 0x2
+ 158 0038 01       		.byte	0x1
+ 159 0039 08       		.byte	0x8
+ 160 003a 83000000 		.4byte	.LASF1
+ 161 003e 02       		.uleb128 0x2
+ 162 003f 02       		.byte	0x2
+ 163 0040 05       		.byte	0x5
+ 164 0041 F6010000 		.4byte	.LASF2
+ 165 0045 02       		.uleb128 0x2
+ 166 0046 02       		.byte	0x2
+ 167 0047 07       		.byte	0x7
+ 168 0048 25010000 		.4byte	.LASF3
+ 169 004c 03       		.uleb128 0x3
+ 170 004d 1D000000 		.4byte	.LASF5
+ 171 0051 02       		.byte	0x2
+ 172 0052 3F       		.byte	0x3f
+ 173 0053 57000000 		.4byte	0x57
+ 174 0057 02       		.uleb128 0x2
+ 175 0058 04       		.byte	0x4
+ 176 0059 05       		.byte	0x5
+ 177 005a 20020000 		.4byte	.LASF6
+ 178 005e 03       		.uleb128 0x3
+ 179 005f 57010000 		.4byte	.LASF7
+ 180 0063 02       		.byte	0x2
+ 181 0064 41       		.byte	0x41
+ 182 0065 69000000 		.4byte	0x69
+ 183 0069 02       		.uleb128 0x2
+ 184 006a 04       		.byte	0x4
+ 185 006b 07       		.byte	0x7
+ 186 006c 45010000 		.4byte	.LASF8
+ 187 0070 02       		.uleb128 0x2
+ 188 0071 08       		.byte	0x8
+ 189 0072 05       		.byte	0x5
+ 190 0073 D7010000 		.4byte	.LASF9
+ 191 0077 02       		.uleb128 0x2
+ 192 0078 08       		.byte	0x8
+ 193 0079 07       		.byte	0x7
+ 194 007a 81010000 		.4byte	.LASF10
+ 195 007e 04       		.uleb128 0x4
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 5
+
+
+ 196 007f 04       		.byte	0x4
+ 197 0080 05       		.byte	0x5
+ 198 0081 696E7400 		.ascii	"int\000"
+ 199 0085 02       		.uleb128 0x2
+ 200 0086 04       		.byte	0x4
+ 201 0087 07       		.byte	0x7
+ 202 0088 62010000 		.4byte	.LASF11
+ 203 008c 03       		.uleb128 0x3
+ 204 008d 98010000 		.4byte	.LASF12
+ 205 0091 03       		.byte	0x3
+ 206 0092 18       		.byte	0x18
+ 207 0093 2C000000 		.4byte	0x2c
+ 208 0097 03       		.uleb128 0x3
+ 209 0098 64000000 		.4byte	.LASF13
+ 210 009c 03       		.byte	0x3
+ 211 009d 2C       		.byte	0x2c
+ 212 009e 4C000000 		.4byte	0x4c
+ 213 00a2 03       		.uleb128 0x3
+ 214 00a3 17020000 		.4byte	.LASF14
+ 215 00a7 03       		.byte	0x3
+ 216 00a8 30       		.byte	0x30
+ 217 00a9 5E000000 		.4byte	0x5e
+ 218 00ad 02       		.uleb128 0x2
+ 219 00ae 04       		.byte	0x4
+ 220 00af 04       		.byte	0x4
+ 221 00b0 7D000000 		.4byte	.LASF15
+ 222 00b4 02       		.uleb128 0x2
+ 223 00b5 08       		.byte	0x8
+ 224 00b6 04       		.byte	0x4
+ 225 00b7 4B000000 		.4byte	.LASF16
+ 226 00bb 02       		.uleb128 0x2
+ 227 00bc 01       		.byte	0x1
+ 228 00bd 08       		.byte	0x8
+ 229 00be E5010000 		.4byte	.LASF17
+ 230 00c2 02       		.uleb128 0x2
+ 231 00c3 08       		.byte	0x8
+ 232 00c4 04       		.byte	0x4
+ 233 00c5 B7010000 		.4byte	.LASF18
+ 234 00c9 02       		.uleb128 0x2
+ 235 00ca 04       		.byte	0x4
+ 236 00cb 07       		.byte	0x7
+ 237 00cc C3010000 		.4byte	.LASF19
+ 238 00d0 05       		.uleb128 0x5
+ 239 00d1 08       		.byte	0x8
+ 240 00d2 04       		.byte	0x4
+ 241 00d3 19       		.byte	0x19
+ 242 00d4 FD000000 		.4byte	0xfd
+ 243 00d8 06       		.uleb128 0x6
+ 244 00d9 17000000 		.4byte	.LASF20
+ 245 00dd 04       		.byte	0x4
+ 246 00de 1A       		.byte	0x1a
+ 247 00df 8C000000 		.4byte	0x8c
+ 248 00e3 00       		.byte	0
+ 249 00e4 06       		.uleb128 0x6
+ 250 00e5 AC010000 		.4byte	.LASF21
+ 251 00e9 04       		.byte	0x4
+ 252 00ea 1B       		.byte	0x1b
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 6
+
+
+ 253 00eb 8C000000 		.4byte	0x8c
+ 254 00ef 01       		.byte	0x1
+ 255 00f0 06       		.uleb128 0x6
+ 256 00f1 73020000 		.4byte	.LASF22
+ 257 00f5 04       		.byte	0x4
+ 258 00f6 1C       		.byte	0x1c
+ 259 00f7 A2000000 		.4byte	0xa2
+ 260 00fb 04       		.byte	0x4
+ 261 00fc 00       		.byte	0
+ 262 00fd 03       		.uleb128 0x3
+ 263 00fe A0010000 		.4byte	.LASF23
+ 264 0102 04       		.byte	0x4
+ 265 0103 1D       		.byte	0x1d
+ 266 0104 D0000000 		.4byte	0xd0
+ 267 0108 07       		.uleb128 0x7
+ 268 0109 00020000 		.4byte	.LASF38
+ 269 010d 01       		.byte	0x1
+ 270 010e 0E       		.byte	0xe
+ 271 010f 00000000 		.4byte	.LFB63
+ 272 0113 02000000 		.4byte	.LFE63-.LFB63
+ 273 0117 01       		.uleb128 0x1
+ 274 0118 9C       		.byte	0x9c
+ 275 0119 08       		.uleb128 0x8
+ 276 011a 6C000000 		.4byte	.LASF26
+ 277 011e 01       		.byte	0x1
+ 278 011f 12       		.byte	0x12
+ 279 0120 00000000 		.4byte	.LFB64
+ 280 0124 1C000000 		.4byte	.LFE64-.LFB64
+ 281 0128 01       		.uleb128 0x1
+ 282 0129 9C       		.byte	0x9c
+ 283 012a 5F010000 		.4byte	0x15f
+ 284 012e 09       		.uleb128 0x9
+ 285 012f 27000000 		.4byte	.LASF24
+ 286 0133 01       		.byte	0x1
+ 287 0134 12       		.byte	0x12
+ 288 0135 5F010000 		.4byte	0x15f
+ 289 0139 00000000 		.4byte	.LLST0
+ 290 013d 09       		.uleb128 0x9
+ 291 013e 1F010000 		.4byte	.LASF25
+ 292 0142 01       		.byte	0x1
+ 293 0143 12       		.byte	0x12
+ 294 0144 5F010000 		.4byte	0x15f
+ 295 0148 1E000000 		.4byte	.LLST1
+ 296 014c 0A       		.uleb128 0xa
+ 297 014d 12000000 		.4byte	.LVL1
+ 298 0151 CE010000 		.4byte	0x1ce
+ 299 0155 0A       		.uleb128 0xa
+ 300 0156 18000000 		.4byte	.LVL2
+ 301 015a D9010000 		.4byte	0x1d9
+ 302 015e 00       		.byte	0
+ 303 015f 0B       		.uleb128 0xb
+ 304 0160 04       		.byte	0x4
+ 305 0161 FD000000 		.4byte	0xfd
+ 306 0165 08       		.uleb128 0x8
+ 307 0166 EA010000 		.4byte	.LASF27
+ 308 016a 01       		.byte	0x1
+ 309 016b 1B       		.byte	0x1b
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 7
+
+
+ 310 016c 00000000 		.4byte	.LFB65
+ 311 0170 22000000 		.4byte	.LFE65-.LFB65
+ 312 0174 01       		.uleb128 0x1
+ 313 0175 9C       		.byte	0x9c
+ 314 0176 BD010000 		.4byte	0x1bd
+ 315 017a 09       		.uleb128 0x9
+ 316 017b 5D000000 		.4byte	.LASF28
+ 317 017f 01       		.byte	0x1
+ 318 0180 1B       		.byte	0x1b
+ 319 0181 8C000000 		.4byte	0x8c
+ 320 0185 3C000000 		.4byte	.LLST2
+ 321 0189 09       		.uleb128 0x9
+ 322 018a 17000000 		.4byte	.LASF20
+ 323 018e 01       		.byte	0x1
+ 324 018f 1B       		.byte	0x1b
+ 325 0190 8C000000 		.4byte	0x8c
+ 326 0194 76000000 		.4byte	.LLST3
+ 327 0198 0A       		.uleb128 0xa
+ 328 0199 0A000000 		.4byte	.LVL4
+ 329 019d E4010000 		.4byte	0x1e4
+ 330 01a1 0A       		.uleb128 0xa
+ 331 01a2 10000000 		.4byte	.LVL5
+ 332 01a6 EF010000 		.4byte	0x1ef
+ 333 01aa 0A       		.uleb128 0xa
+ 334 01ab 1A000000 		.4byte	.LVL7
+ 335 01af FA010000 		.4byte	0x1fa
+ 336 01b3 0A       		.uleb128 0xa
+ 337 01b4 20000000 		.4byte	.LVL8
+ 338 01b8 05020000 		.4byte	0x205
+ 339 01bc 00       		.byte	0
+ 340 01bd 0C       		.uleb128 0xc
+ 341 01be 38010000 		.4byte	.LASF39
+ 342 01c2 09       		.byte	0x9
+ 343 01c3 1207     		.2byte	0x712
+ 344 01c5 C9010000 		.4byte	0x1c9
+ 345 01c9 0D       		.uleb128 0xd
+ 346 01ca 97000000 		.4byte	0x97
+ 347 01ce 0E       		.uleb128 0xe
+ 348 01cf 3A000000 		.4byte	.LASF29
+ 349 01d3 3A000000 		.4byte	.LASF29
+ 350 01d7 05       		.byte	0x5
+ 351 01d8 29       		.byte	0x29
+ 352 01d9 0E       		.uleb128 0xe
+ 353 01da 6F010000 		.4byte	.LASF30
+ 354 01de 6F010000 		.4byte	.LASF30
+ 355 01e2 06       		.byte	0x6
+ 356 01e3 29       		.byte	0x29
+ 357 01e4 0E       		.uleb128 0xe
+ 358 01e5 00000000 		.4byte	.LASF31
+ 359 01e9 00000000 		.4byte	.LASF31
+ 360 01ed 07       		.byte	0x7
+ 361 01ee DB       		.byte	0xdb
+ 362 01ef 0E       		.uleb128 0xe
+ 363 01f0 CC010000 		.4byte	.LASF32
+ 364 01f4 CC010000 		.4byte	.LASF32
+ 365 01f8 07       		.byte	0x7
+ 366 01f9 93       		.byte	0x93
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 8
+
+
+ 367 01fa 0E       		.uleb128 0xe
+ 368 01fb 0A020000 		.4byte	.LASF33
+ 369 01ff 0A020000 		.4byte	.LASF33
+ 370 0203 08       		.byte	0x8
+ 371 0204 DB       		.byte	0xdb
+ 372 0205 0E       		.uleb128 0xe
+ 373 0206 52000000 		.4byte	.LASF34
+ 374 020a 52000000 		.4byte	.LASF34
+ 375 020e 08       		.byte	0x8
+ 376 020f 93       		.byte	0x93
+ 377 0210 00       		.byte	0
+ 378              		.section	.debug_abbrev,"",%progbits
+ 379              	.Ldebug_abbrev0:
+ 380 0000 01       		.uleb128 0x1
+ 381 0001 11       		.uleb128 0x11
+ 382 0002 01       		.byte	0x1
+ 383 0003 25       		.uleb128 0x25
+ 384 0004 0E       		.uleb128 0xe
+ 385 0005 13       		.uleb128 0x13
+ 386 0006 0B       		.uleb128 0xb
+ 387 0007 03       		.uleb128 0x3
+ 388 0008 0E       		.uleb128 0xe
+ 389 0009 1B       		.uleb128 0x1b
+ 390 000a 0E       		.uleb128 0xe
+ 391 000b 55       		.uleb128 0x55
+ 392 000c 17       		.uleb128 0x17
+ 393 000d 11       		.uleb128 0x11
+ 394 000e 01       		.uleb128 0x1
+ 395 000f 10       		.uleb128 0x10
+ 396 0010 17       		.uleb128 0x17
+ 397 0011 00       		.byte	0
+ 398 0012 00       		.byte	0
+ 399 0013 02       		.uleb128 0x2
+ 400 0014 24       		.uleb128 0x24
+ 401 0015 00       		.byte	0
+ 402 0016 0B       		.uleb128 0xb
+ 403 0017 0B       		.uleb128 0xb
+ 404 0018 3E       		.uleb128 0x3e
+ 405 0019 0B       		.uleb128 0xb
+ 406 001a 03       		.uleb128 0x3
+ 407 001b 0E       		.uleb128 0xe
+ 408 001c 00       		.byte	0
+ 409 001d 00       		.byte	0
+ 410 001e 03       		.uleb128 0x3
+ 411 001f 16       		.uleb128 0x16
+ 412 0020 00       		.byte	0
+ 413 0021 03       		.uleb128 0x3
+ 414 0022 0E       		.uleb128 0xe
+ 415 0023 3A       		.uleb128 0x3a
+ 416 0024 0B       		.uleb128 0xb
+ 417 0025 3B       		.uleb128 0x3b
+ 418 0026 0B       		.uleb128 0xb
+ 419 0027 49       		.uleb128 0x49
+ 420 0028 13       		.uleb128 0x13
+ 421 0029 00       		.byte	0
+ 422 002a 00       		.byte	0
+ 423 002b 04       		.uleb128 0x4
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 9
+
+
+ 424 002c 24       		.uleb128 0x24
+ 425 002d 00       		.byte	0
+ 426 002e 0B       		.uleb128 0xb
+ 427 002f 0B       		.uleb128 0xb
+ 428 0030 3E       		.uleb128 0x3e
+ 429 0031 0B       		.uleb128 0xb
+ 430 0032 03       		.uleb128 0x3
+ 431 0033 08       		.uleb128 0x8
+ 432 0034 00       		.byte	0
+ 433 0035 00       		.byte	0
+ 434 0036 05       		.uleb128 0x5
+ 435 0037 13       		.uleb128 0x13
+ 436 0038 01       		.byte	0x1
+ 437 0039 0B       		.uleb128 0xb
+ 438 003a 0B       		.uleb128 0xb
+ 439 003b 3A       		.uleb128 0x3a
+ 440 003c 0B       		.uleb128 0xb
+ 441 003d 3B       		.uleb128 0x3b
+ 442 003e 0B       		.uleb128 0xb
+ 443 003f 01       		.uleb128 0x1
+ 444 0040 13       		.uleb128 0x13
+ 445 0041 00       		.byte	0
+ 446 0042 00       		.byte	0
+ 447 0043 06       		.uleb128 0x6
+ 448 0044 0D       		.uleb128 0xd
+ 449 0045 00       		.byte	0
+ 450 0046 03       		.uleb128 0x3
+ 451 0047 0E       		.uleb128 0xe
+ 452 0048 3A       		.uleb128 0x3a
+ 453 0049 0B       		.uleb128 0xb
+ 454 004a 3B       		.uleb128 0x3b
+ 455 004b 0B       		.uleb128 0xb
+ 456 004c 49       		.uleb128 0x49
+ 457 004d 13       		.uleb128 0x13
+ 458 004e 38       		.uleb128 0x38
+ 459 004f 0B       		.uleb128 0xb
+ 460 0050 00       		.byte	0
+ 461 0051 00       		.byte	0
+ 462 0052 07       		.uleb128 0x7
+ 463 0053 2E       		.uleb128 0x2e
+ 464 0054 00       		.byte	0
+ 465 0055 3F       		.uleb128 0x3f
+ 466 0056 19       		.uleb128 0x19
+ 467 0057 03       		.uleb128 0x3
+ 468 0058 0E       		.uleb128 0xe
+ 469 0059 3A       		.uleb128 0x3a
+ 470 005a 0B       		.uleb128 0xb
+ 471 005b 3B       		.uleb128 0x3b
+ 472 005c 0B       		.uleb128 0xb
+ 473 005d 27       		.uleb128 0x27
+ 474 005e 19       		.uleb128 0x19
+ 475 005f 11       		.uleb128 0x11
+ 476 0060 01       		.uleb128 0x1
+ 477 0061 12       		.uleb128 0x12
+ 478 0062 06       		.uleb128 0x6
+ 479 0063 40       		.uleb128 0x40
+ 480 0064 18       		.uleb128 0x18
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 10
+
+
+ 481 0065 9742     		.uleb128 0x2117
+ 482 0067 19       		.uleb128 0x19
+ 483 0068 00       		.byte	0
+ 484 0069 00       		.byte	0
+ 485 006a 08       		.uleb128 0x8
+ 486 006b 2E       		.uleb128 0x2e
+ 487 006c 01       		.byte	0x1
+ 488 006d 3F       		.uleb128 0x3f
+ 489 006e 19       		.uleb128 0x19
+ 490 006f 03       		.uleb128 0x3
+ 491 0070 0E       		.uleb128 0xe
+ 492 0071 3A       		.uleb128 0x3a
+ 493 0072 0B       		.uleb128 0xb
+ 494 0073 3B       		.uleb128 0x3b
+ 495 0074 0B       		.uleb128 0xb
+ 496 0075 27       		.uleb128 0x27
+ 497 0076 19       		.uleb128 0x19
+ 498 0077 11       		.uleb128 0x11
+ 499 0078 01       		.uleb128 0x1
+ 500 0079 12       		.uleb128 0x12
+ 501 007a 06       		.uleb128 0x6
+ 502 007b 40       		.uleb128 0x40
+ 503 007c 18       		.uleb128 0x18
+ 504 007d 9742     		.uleb128 0x2117
+ 505 007f 19       		.uleb128 0x19
+ 506 0080 01       		.uleb128 0x1
+ 507 0081 13       		.uleb128 0x13
+ 508 0082 00       		.byte	0
+ 509 0083 00       		.byte	0
+ 510 0084 09       		.uleb128 0x9
+ 511 0085 05       		.uleb128 0x5
+ 512 0086 00       		.byte	0
+ 513 0087 03       		.uleb128 0x3
+ 514 0088 0E       		.uleb128 0xe
+ 515 0089 3A       		.uleb128 0x3a
+ 516 008a 0B       		.uleb128 0xb
+ 517 008b 3B       		.uleb128 0x3b
+ 518 008c 0B       		.uleb128 0xb
+ 519 008d 49       		.uleb128 0x49
+ 520 008e 13       		.uleb128 0x13
+ 521 008f 02       		.uleb128 0x2
+ 522 0090 17       		.uleb128 0x17
+ 523 0091 00       		.byte	0
+ 524 0092 00       		.byte	0
+ 525 0093 0A       		.uleb128 0xa
+ 526 0094 898201   		.uleb128 0x4109
+ 527 0097 00       		.byte	0
+ 528 0098 11       		.uleb128 0x11
+ 529 0099 01       		.uleb128 0x1
+ 530 009a 31       		.uleb128 0x31
+ 531 009b 13       		.uleb128 0x13
+ 532 009c 00       		.byte	0
+ 533 009d 00       		.byte	0
+ 534 009e 0B       		.uleb128 0xb
+ 535 009f 0F       		.uleb128 0xf
+ 536 00a0 00       		.byte	0
+ 537 00a1 0B       		.uleb128 0xb
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 11
+
+
+ 538 00a2 0B       		.uleb128 0xb
+ 539 00a3 49       		.uleb128 0x49
+ 540 00a4 13       		.uleb128 0x13
+ 541 00a5 00       		.byte	0
+ 542 00a6 00       		.byte	0
+ 543 00a7 0C       		.uleb128 0xc
+ 544 00a8 34       		.uleb128 0x34
+ 545 00a9 00       		.byte	0
+ 546 00aa 03       		.uleb128 0x3
+ 547 00ab 0E       		.uleb128 0xe
+ 548 00ac 3A       		.uleb128 0x3a
+ 549 00ad 0B       		.uleb128 0xb
+ 550 00ae 3B       		.uleb128 0x3b
+ 551 00af 05       		.uleb128 0x5
+ 552 00b0 49       		.uleb128 0x49
+ 553 00b1 13       		.uleb128 0x13
+ 554 00b2 3F       		.uleb128 0x3f
+ 555 00b3 19       		.uleb128 0x19
+ 556 00b4 3C       		.uleb128 0x3c
+ 557 00b5 19       		.uleb128 0x19
+ 558 00b6 00       		.byte	0
+ 559 00b7 00       		.byte	0
+ 560 00b8 0D       		.uleb128 0xd
+ 561 00b9 35       		.uleb128 0x35
+ 562 00ba 00       		.byte	0
+ 563 00bb 49       		.uleb128 0x49
+ 564 00bc 13       		.uleb128 0x13
+ 565 00bd 00       		.byte	0
+ 566 00be 00       		.byte	0
+ 567 00bf 0E       		.uleb128 0xe
+ 568 00c0 2E       		.uleb128 0x2e
+ 569 00c1 00       		.byte	0
+ 570 00c2 3F       		.uleb128 0x3f
+ 571 00c3 19       		.uleb128 0x19
+ 572 00c4 3C       		.uleb128 0x3c
+ 573 00c5 19       		.uleb128 0x19
+ 574 00c6 6E       		.uleb128 0x6e
+ 575 00c7 0E       		.uleb128 0xe
+ 576 00c8 03       		.uleb128 0x3
+ 577 00c9 0E       		.uleb128 0xe
+ 578 00ca 3A       		.uleb128 0x3a
+ 579 00cb 0B       		.uleb128 0xb
+ 580 00cc 3B       		.uleb128 0x3b
+ 581 00cd 0B       		.uleb128 0xb
+ 582 00ce 00       		.byte	0
+ 583 00cf 00       		.byte	0
+ 584 00d0 00       		.byte	0
+ 585              		.section	.debug_loc,"",%progbits
+ 586              	.Ldebug_loc0:
+ 587              	.LLST0:
+ 588 0000 00000000 		.4byte	.LVL0
+ 589 0004 11000000 		.4byte	.LVL1-1
+ 590 0008 0100     		.2byte	0x1
+ 591 000a 50       		.byte	0x50
+ 592 000b 11000000 		.4byte	.LVL1-1
+ 593 000f 1C000000 		.4byte	.LFE64
+ 594 0013 0100     		.2byte	0x1
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 12
+
+
+ 595 0015 55       		.byte	0x55
+ 596 0016 00000000 		.4byte	0
+ 597 001a 00000000 		.4byte	0
+ 598              	.LLST1:
+ 599 001e 00000000 		.4byte	.LVL0
+ 600 0022 11000000 		.4byte	.LVL1-1
+ 601 0026 0100     		.2byte	0x1
+ 602 0028 51       		.byte	0x51
+ 603 0029 11000000 		.4byte	.LVL1-1
+ 604 002d 1C000000 		.4byte	.LFE64
+ 605 0031 0100     		.2byte	0x1
+ 606 0033 54       		.byte	0x54
+ 607 0034 00000000 		.4byte	0
+ 608 0038 00000000 		.4byte	0
+ 609              	.LLST2:
+ 610 003c 00000000 		.4byte	.LVL3
+ 611 0040 09000000 		.4byte	.LVL4-1
+ 612 0044 0100     		.2byte	0x1
+ 613 0046 50       		.byte	0x50
+ 614 0047 09000000 		.4byte	.LVL4-1
+ 615 004b 12000000 		.4byte	.LVL6
+ 616 004f 0400     		.2byte	0x4
+ 617 0051 F3       		.byte	0xf3
+ 618 0052 01       		.uleb128 0x1
+ 619 0053 50       		.byte	0x50
+ 620 0054 9F       		.byte	0x9f
+ 621 0055 12000000 		.4byte	.LVL6
+ 622 0059 19000000 		.4byte	.LVL7-1
+ 623 005d 0100     		.2byte	0x1
+ 624 005f 50       		.byte	0x50
+ 625 0060 19000000 		.4byte	.LVL7-1
+ 626 0064 22000000 		.4byte	.LFE65
+ 627 0068 0400     		.2byte	0x4
+ 628 006a F3       		.byte	0xf3
+ 629 006b 01       		.uleb128 0x1
+ 630 006c 50       		.byte	0x50
+ 631 006d 9F       		.byte	0x9f
+ 632 006e 00000000 		.4byte	0
+ 633 0072 00000000 		.4byte	0
+ 634              	.LLST3:
+ 635 0076 00000000 		.4byte	.LVL3
+ 636 007a 09000000 		.4byte	.LVL4-1
+ 637 007e 0100     		.2byte	0x1
+ 638 0080 51       		.byte	0x51
+ 639 0081 09000000 		.4byte	.LVL4-1
+ 640 0085 12000000 		.4byte	.LVL6
+ 641 0089 0400     		.2byte	0x4
+ 642 008b F3       		.byte	0xf3
+ 643 008c 01       		.uleb128 0x1
+ 644 008d 51       		.byte	0x51
+ 645 008e 9F       		.byte	0x9f
+ 646 008f 12000000 		.4byte	.LVL6
+ 647 0093 19000000 		.4byte	.LVL7-1
+ 648 0097 0100     		.2byte	0x1
+ 649 0099 51       		.byte	0x51
+ 650 009a 19000000 		.4byte	.LVL7-1
+ 651 009e 22000000 		.4byte	.LFE65
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 13
+
+
+ 652 00a2 0400     		.2byte	0x4
+ 653 00a4 F3       		.byte	0xf3
+ 654 00a5 01       		.uleb128 0x1
+ 655 00a6 51       		.byte	0x51
+ 656 00a7 9F       		.byte	0x9f
+ 657 00a8 00000000 		.4byte	0
+ 658 00ac 00000000 		.4byte	0
+ 659              		.section	.debug_aranges,"",%progbits
+ 660 0000 2C000000 		.4byte	0x2c
+ 661 0004 0200     		.2byte	0x2
+ 662 0006 00000000 		.4byte	.Ldebug_info0
+ 663 000a 04       		.byte	0x4
+ 664 000b 00       		.byte	0
+ 665 000c 0000     		.2byte	0
+ 666 000e 0000     		.2byte	0
+ 667 0010 00000000 		.4byte	.LFB63
+ 668 0014 02000000 		.4byte	.LFE63-.LFB63
+ 669 0018 00000000 		.4byte	.LFB64
+ 670 001c 1C000000 		.4byte	.LFE64-.LFB64
+ 671 0020 00000000 		.4byte	.LFB65
+ 672 0024 22000000 		.4byte	.LFE65-.LFB65
+ 673 0028 00000000 		.4byte	0
+ 674 002c 00000000 		.4byte	0
+ 675              		.section	.debug_ranges,"",%progbits
+ 676              	.Ldebug_ranges0:
+ 677 0000 00000000 		.4byte	.LFB63
+ 678 0004 02000000 		.4byte	.LFE63
+ 679 0008 00000000 		.4byte	.LFB64
+ 680 000c 1C000000 		.4byte	.LFE64
+ 681 0010 00000000 		.4byte	.LFB65
+ 682 0014 22000000 		.4byte	.LFE65
+ 683 0018 00000000 		.4byte	0
+ 684 001c 00000000 		.4byte	0
+ 685              		.section	.debug_line,"",%progbits
+ 686              	.Ldebug_line0:
+ 687 0000 DB010000 		.section	.debug_str,"MS",%progbits,1
+ 687      02009001 
+ 687      00000201 
+ 687      FB0E0D00 
+ 687      01010101 
+ 688              	.LASF31:
+ 689 0000 50574D5F 		.ascii	"PWM_1_Enable\000"
+ 689      315F456E 
+ 689      61626C65 
+ 689      00
+ 690              	.LASF4:
+ 691 000d 5F5F7569 		.ascii	"__uint8_t\000"
+ 691      6E74385F 
+ 691      7400
+ 692              	.LASF20:
+ 693 0017 73746174 		.ascii	"state\000"
+ 693      6500
+ 694              	.LASF5:
+ 695 001d 5F5F696E 		.ascii	"__int32_t\000"
+ 695      7433325F 
+ 695      7400
+ 696              	.LASF24:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 14
+
+
+ 697 0027 6C656674 		.ascii	"left\000"
+ 697      00
+ 698              	.LASF36:
+ 699 002c 6770696F 		.ascii	"gpio_driver.c\000"
+ 699      5F647269 
+ 699      7665722E 
+ 699      6300
+ 700              	.LASF29:
+ 701 003a 4C656674 		.ascii	"Left_Button_Read\000"
+ 701      5F427574 
+ 701      746F6E5F 
+ 701      52656164 
+ 701      00
+ 702              	.LASF16:
+ 703 004b 646F7562 		.ascii	"double\000"
+ 703      6C6500
+ 704              	.LASF34:
+ 705 0052 50574D5F 		.ascii	"PWM_2_Stop\000"
+ 705      325F5374 
+ 705      6F7000
+ 706              	.LASF28:
+ 707 005d 6C65645F 		.ascii	"led_id\000"
+ 707      696400
+ 708              	.LASF13:
+ 709 0064 696E7433 		.ascii	"int32_t\000"
+ 709      325F7400 
+ 710              	.LASF26:
+ 711 006c 4750494F 		.ascii	"GPIO_ReadButtons\000"
+ 711      5F526561 
+ 711      64427574 
+ 711      746F6E73 
+ 711      00
+ 712              	.LASF15:
+ 713 007d 666C6F61 		.ascii	"float\000"
+ 713      7400
+ 714              	.LASF1:
+ 715 0083 756E7369 		.ascii	"unsigned char\000"
+ 715      676E6564 
+ 715      20636861 
+ 715      7200
+ 716              	.LASF35:
+ 717 0091 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 717      43313120 
+ 717      352E342E 
+ 717      31203230 
+ 717      31363036 
+ 718 00c4 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 718      20726576 
+ 718      6973696F 
+ 718      6E203233 
+ 718      37373135 
+ 719 00f7 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 719      66756E63 
+ 719      74696F6E 
+ 719      2D736563 
+ 719      74696F6E 
+ 720              	.LASF25:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 15
+
+
+ 721 011f 72696768 		.ascii	"right\000"
+ 721      7400
+ 722              	.LASF3:
+ 723 0125 73686F72 		.ascii	"short unsigned int\000"
+ 723      7420756E 
+ 723      7369676E 
+ 723      65642069 
+ 723      6E7400
+ 724              	.LASF39:
+ 725 0138 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 725      52784275 
+ 725      66666572 
+ 725      00
+ 726              	.LASF8:
+ 727 0145 6C6F6E67 		.ascii	"long unsigned int\000"
+ 727      20756E73 
+ 727      69676E65 
+ 727      6420696E 
+ 727      7400
+ 728              	.LASF7:
+ 729 0157 5F5F7569 		.ascii	"__uint32_t\000"
+ 729      6E743332 
+ 729      5F7400
+ 730              	.LASF11:
+ 731 0162 756E7369 		.ascii	"unsigned int\000"
+ 731      676E6564 
+ 731      20696E74 
+ 731      00
+ 732              	.LASF30:
+ 733 016f 52696768 		.ascii	"Right_Button_Read\000"
+ 733      745F4275 
+ 733      74746F6E 
+ 733      5F526561 
+ 733      6400
+ 734              	.LASF10:
+ 735 0181 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 735      206C6F6E 
+ 735      6720756E 
+ 735      7369676E 
+ 735      65642069 
+ 736              	.LASF12:
+ 737 0198 75696E74 		.ascii	"uint8_t\000"
+ 737      385F7400 
+ 738              	.LASF23:
+ 739 01a0 42757474 		.ascii	"ButtonState\000"
+ 739      6F6E5374 
+ 739      61746500 
+ 740              	.LASF21:
+ 741 01ac 70726576 		.ascii	"prev_state\000"
+ 741      5F737461 
+ 741      746500
+ 742              	.LASF18:
+ 743 01b7 6C6F6E67 		.ascii	"long double\000"
+ 743      20646F75 
+ 743      626C6500 
+ 744              	.LASF19:
+ 745 01c3 73697A65 		.ascii	"sizetype\000"
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 16
+
+
+ 745      74797065 
+ 745      00
+ 746              	.LASF32:
+ 747 01cc 50574D5F 		.ascii	"PWM_1_Stop\000"
+ 747      315F5374 
+ 747      6F7000
+ 748              	.LASF9:
+ 749 01d7 6C6F6E67 		.ascii	"long long int\000"
+ 749      206C6F6E 
+ 749      6720696E 
+ 749      7400
+ 750              	.LASF17:
+ 751 01e5 63686172 		.ascii	"char\000"
+ 751      00
+ 752              	.LASF27:
+ 753 01ea 4750494F 		.ascii	"GPIO_SetLED\000"
+ 753      5F536574 
+ 753      4C454400 
+ 754              	.LASF2:
+ 755 01f6 73686F72 		.ascii	"short int\000"
+ 755      7420696E 
+ 755      7400
+ 756              	.LASF38:
+ 757 0200 4750494F 		.ascii	"GPIO_Init\000"
+ 757      5F496E69 
+ 757      7400
+ 758              	.LASF33:
+ 759 020a 50574D5F 		.ascii	"PWM_2_Enable\000"
+ 759      325F456E 
+ 759      61626C65 
+ 759      00
+ 760              	.LASF14:
+ 761 0217 75696E74 		.ascii	"uint32_t\000"
+ 761      33325F74 
+ 761      00
+ 762              	.LASF6:
+ 763 0220 6C6F6E67 		.ascii	"long int\000"
+ 763      20696E74 
+ 763      00
+ 764              	.LASF37:
+ 765 0229 433A5C55 		.ascii	"C:\\Users\\siman\\OneDrive\\Documents\\PSoC Creator"
+ 765      73657273 
+ 765      5C73696D 
+ 765      616E5C4F 
+ 765      6E654472 
+ 766 0257 5C417373 		.ascii	"\\Assignment\\MoonRider.cydsn\000"
+ 766      69676E6D 
+ 766      656E745C 
+ 766      4D6F6F6E 
+ 766      52696465 
+ 767              	.LASF22:
+ 768 0273 70726573 		.ascii	"press_time\000"
+ 768      735F7469 
+ 768      6D6500
+ 769              	.LASF0:
+ 770 027e 7369676E 		.ascii	"signed char\000"
+ 770      65642063 
+ARM GAS  C:\Users\siman\AppData\Local\Temp\ccRDtgYG.s 			page 17
+
+
+ 770      68617200 
+ 771              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

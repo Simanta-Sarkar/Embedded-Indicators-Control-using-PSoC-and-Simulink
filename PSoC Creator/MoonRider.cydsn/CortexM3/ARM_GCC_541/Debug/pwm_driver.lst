@@ -1,0 +1,1205 @@
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"pwm_driver.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.PWM_SetState,"ax",%progbits
+  20              		.align	2
+  21              		.global	PWM_SetState
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	PWM_SetState, %function
+  25              	PWM_SetState:
+  26              	.LFB64:
+  27              		.file 1 "pwm_driver.c"
+   1:pwm_driver.c  **** /* ========================================
+   2:pwm_driver.c  ****  *
+   3:pwm_driver.c  ****  * Copyright YOUR COMPANY, THE YEAR
+   4:pwm_driver.c  ****  * All Rights Reserved
+   5:pwm_driver.c  ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:pwm_driver.c  ****  *
+   7:pwm_driver.c  ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:pwm_driver.c  ****  * WHICH IS THE PROPERTY OF your company.
+   9:pwm_driver.c  ****  *
+  10:pwm_driver.c  ****  * ========================================
+  11:pwm_driver.c  **** */
+  12:pwm_driver.c  **** #include "pwm_driver.h"
+  13:pwm_driver.c  **** #include "uart_driver.h"
+  14:pwm_driver.c  **** 
+  15:pwm_driver.c  **** static uint8_t left_led_state = 0;
+  16:pwm_driver.c  **** static uint8_t right_led_state = 0;
+  17:pwm_driver.c  **** 
+  18:pwm_driver.c  **** void PWM_Init(void) {
+  19:pwm_driver.c  ****     PWM_SetState(PWM_LEFT, 0);
+  20:pwm_driver.c  ****     PWM_SetState(PWM_RIGHT, 0);
+  21:pwm_driver.c  **** }
+  22:pwm_driver.c  **** 
+  23:pwm_driver.c  **** void PWM_SetState(uint8_t channel, uint8_t state) {
+  28              		.loc 1 23 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 08B5     		push	{r3, lr}
+  34              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 2
+
+
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  24:pwm_driver.c  ****     if (channel == PWM_LEFT) {
+  37              		.loc 1 24 0
+  38 0002 60B9     		cbnz	r0, .L2
+  25:pwm_driver.c  ****         if (left_led_state != state) {
+  39              		.loc 1 25 0
+  40 0004 0D4B     		ldr	r3, .L9
+  41 0006 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  42 0008 8B42     		cmp	r3, r1
+  43 000a 16D0     		beq	.L1
+  26:pwm_driver.c  ****             left_led_state = state;
+  44              		.loc 1 26 0
+  45 000c 0B4B     		ldr	r3, .L9
+  46 000e 1970     		strb	r1, [r3]
+  27:pwm_driver.c  ****             UART_Log(state ? "Left LED: ON" : "Left LED: OFF");
+  47              		.loc 1 27 0
+  48 0010 09B1     		cbz	r1, .L6
+  49 0012 0B48     		ldr	r0, .L9+4
+  50              	.LVL1:
+  51 0014 00E0     		b	.L4
+  52              	.LVL2:
+  53              	.L6:
+  54 0016 0B48     		ldr	r0, .L9+8
+  55              	.LVL3:
+  56              	.L4:
+  57              		.loc 1 27 0 is_stmt 0 discriminator 4
+  58 0018 FFF7FEFF 		bl	UART_Log
+  59              	.LVL4:
+  60 001c 08BD     		pop	{r3, pc}
+  61              	.LVL5:
+  62              	.L2:
+  28:pwm_driver.c  ****         }
+  29:pwm_driver.c  ****     } else if (channel == PWM_RIGHT) {
+  63              		.loc 1 29 0 is_stmt 1
+  64 001e 0128     		cmp	r0, #1
+  65 0020 0BD1     		bne	.L1
+  30:pwm_driver.c  ****         if (right_led_state != state) {
+  66              		.loc 1 30 0
+  67 0022 064B     		ldr	r3, .L9
+  68 0024 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+  69 0026 9942     		cmp	r1, r3
+  70 0028 07D0     		beq	.L1
+  31:pwm_driver.c  ****             right_led_state = state;
+  71              		.loc 1 31 0
+  72 002a 044B     		ldr	r3, .L9
+  73 002c 5970     		strb	r1, [r3, #1]
+  32:pwm_driver.c  ****             UART_Log(state ? "Right LED: ON" : "Right LED: OFF");
+  74              		.loc 1 32 0
+  75 002e 09B1     		cbz	r1, .L7
+  76 0030 0548     		ldr	r0, .L9+12
+  77              	.LVL6:
+  78 0032 00E0     		b	.L5
+  79              	.LVL7:
+  80              	.L7:
+  81 0034 0548     		ldr	r0, .L9+16
+  82              	.LVL8:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 3
+
+
+  83              	.L5:
+  84              		.loc 1 32 0 is_stmt 0 discriminator 4
+  85 0036 FFF7FEFF 		bl	UART_Log
+  86              	.LVL9:
+  87              	.L1:
+  88 003a 08BD     		pop	{r3, pc}
+  89              	.L10:
+  90              		.align	2
+  91              	.L9:
+  92 003c 00000000 		.word	.LANCHOR0
+  93 0040 00000000 		.word	.LC0
+  94 0044 10000000 		.word	.LC1
+  95 0048 20000000 		.word	.LC2
+  96 004c 30000000 		.word	.LC3
+  97              		.cfi_endproc
+  98              	.LFE64:
+  99              		.size	PWM_SetState, .-PWM_SetState
+ 100              		.section	.text.PWM_Init,"ax",%progbits
+ 101              		.align	2
+ 102              		.global	PWM_Init
+ 103              		.thumb
+ 104              		.thumb_func
+ 105              		.type	PWM_Init, %function
+ 106              	PWM_Init:
+ 107              	.LFB63:
+  18:pwm_driver.c  ****     PWM_SetState(PWM_LEFT, 0);
+ 108              		.loc 1 18 0 is_stmt 1
+ 109              		.cfi_startproc
+ 110              		@ args = 0, pretend = 0, frame = 0
+ 111              		@ frame_needed = 0, uses_anonymous_args = 0
+ 112 0000 08B5     		push	{r3, lr}
+ 113              		.cfi_def_cfa_offset 8
+ 114              		.cfi_offset 3, -8
+ 115              		.cfi_offset 14, -4
+  19:pwm_driver.c  ****     PWM_SetState(PWM_RIGHT, 0);
+ 116              		.loc 1 19 0
+ 117 0002 0021     		movs	r1, #0
+ 118 0004 0846     		mov	r0, r1
+ 119 0006 FFF7FEFF 		bl	PWM_SetState
+ 120              	.LVL10:
+  20:pwm_driver.c  **** }
+ 121              		.loc 1 20 0
+ 122 000a 0021     		movs	r1, #0
+ 123 000c 0120     		movs	r0, #1
+ 124 000e FFF7FEFF 		bl	PWM_SetState
+ 125              	.LVL11:
+ 126 0012 08BD     		pop	{r3, pc}
+ 127              		.cfi_endproc
+ 128              	.LFE63:
+ 129              		.size	PWM_Init, .-PWM_Init
+ 130              		.section	.text.PWM_Toggle,"ax",%progbits
+ 131              		.align	2
+ 132              		.global	PWM_Toggle
+ 133              		.thumb
+ 134              		.thumb_func
+ 135              		.type	PWM_Toggle, %function
+ 136              	PWM_Toggle:
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 4
+
+
+ 137              	.LFB65:
+  33:pwm_driver.c  ****         }
+  34:pwm_driver.c  ****     }
+  35:pwm_driver.c  **** }
+  36:pwm_driver.c  **** 
+  37:pwm_driver.c  **** void PWM_Toggle(uint8_t channel) {
+ 138              		.loc 1 37 0
+ 139              		.cfi_startproc
+ 140              		@ args = 0, pretend = 0, frame = 0
+ 141              		@ frame_needed = 0, uses_anonymous_args = 0
+ 142              	.LVL12:
+ 143 0000 08B5     		push	{r3, lr}
+ 144              		.cfi_def_cfa_offset 8
+ 145              		.cfi_offset 3, -8
+ 146              		.cfi_offset 14, -4
+  38:pwm_driver.c  ****     if (channel == PWM_LEFT) {
+ 147              		.loc 1 38 0
+ 148 0002 60B9     		cbnz	r0, .L14
+  39:pwm_driver.c  ****         left_led_state = !left_led_state;
+ 149              		.loc 1 39 0
+ 150 0004 0D4A     		ldr	r2, .L21
+ 151 0006 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 152 0008 B3FA83F3 		clz	r3, r3
+ 153 000c 5B09     		lsrs	r3, r3, #5
+ 154 000e 1370     		strb	r3, [r2]
+  40:pwm_driver.c  ****         UART_Log(left_led_state ? "Left LED: ON (Toggled)" : "Left LED: OFF (Toggled)");
+ 155              		.loc 1 40 0
+ 156 0010 0BB1     		cbz	r3, .L18
+ 157 0012 0B48     		ldr	r0, .L21+4
+ 158              	.LVL13:
+ 159 0014 00E0     		b	.L15
+ 160              	.LVL14:
+ 161              	.L18:
+ 162 0016 0B48     		ldr	r0, .L21+8
+ 163              	.LVL15:
+ 164              	.L15:
+ 165              		.loc 1 40 0 is_stmt 0 discriminator 4
+ 166 0018 FFF7FEFF 		bl	UART_Log
+ 167              	.LVL16:
+ 168 001c 08BD     		pop	{r3, pc}
+ 169              	.LVL17:
+ 170              	.L14:
+  41:pwm_driver.c  ****     } else if (channel == PWM_RIGHT) {
+ 171              		.loc 1 41 0 is_stmt 1
+ 172 001e 0128     		cmp	r0, #1
+ 173 0020 0BD1     		bne	.L13
+  42:pwm_driver.c  ****         right_led_state = !right_led_state;
+ 174              		.loc 1 42 0
+ 175 0022 064A     		ldr	r2, .L21
+ 176 0024 5378     		ldrb	r3, [r2, #1]	@ zero_extendqisi2
+ 177 0026 B3FA83F3 		clz	r3, r3
+ 178 002a 5B09     		lsrs	r3, r3, #5
+ 179 002c 5370     		strb	r3, [r2, #1]
+  43:pwm_driver.c  ****         UART_Log(right_led_state ? "Right LED: ON (Toggled)" : "Right LED: OFF (Toggled)");
+ 180              		.loc 1 43 0
+ 181 002e 0BB1     		cbz	r3, .L19
+ 182 0030 0548     		ldr	r0, .L21+12
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 5
+
+
+ 183              	.LVL18:
+ 184 0032 00E0     		b	.L17
+ 185              	.LVL19:
+ 186              	.L19:
+ 187 0034 0548     		ldr	r0, .L21+16
+ 188              	.LVL20:
+ 189              	.L17:
+ 190              		.loc 1 43 0 is_stmt 0 discriminator 4
+ 191 0036 FFF7FEFF 		bl	UART_Log
+ 192              	.LVL21:
+ 193              	.L13:
+ 194 003a 08BD     		pop	{r3, pc}
+ 195              	.L22:
+ 196              		.align	2
+ 197              	.L21:
+ 198 003c 00000000 		.word	.LANCHOR0
+ 199 0040 40000000 		.word	.LC4
+ 200 0044 58000000 		.word	.LC5
+ 201 0048 70000000 		.word	.LC6
+ 202 004c 88000000 		.word	.LC7
+ 203              		.cfi_endproc
+ 204              	.LFE65:
+ 205              		.size	PWM_Toggle, .-PWM_Toggle
+ 206              		.section	.text.PWM_GetState,"ax",%progbits
+ 207              		.align	2
+ 208              		.global	PWM_GetState
+ 209              		.thumb
+ 210              		.thumb_func
+ 211              		.type	PWM_GetState, %function
+ 212              	PWM_GetState:
+ 213              	.LFB66:
+  44:pwm_driver.c  ****     }
+  45:pwm_driver.c  **** }
+  46:pwm_driver.c  **** 
+  47:pwm_driver.c  **** uint8_t PWM_GetState(uint8_t channel) {
+ 214              		.loc 1 47 0 is_stmt 1
+ 215              		.cfi_startproc
+ 216              		@ args = 0, pretend = 0, frame = 0
+ 217              		@ frame_needed = 0, uses_anonymous_args = 0
+ 218              		@ link register save eliminated.
+ 219              	.LVL22:
+  48:pwm_driver.c  ****     return (channel == PWM_LEFT) ? left_led_state : right_led_state;
+ 220              		.loc 1 48 0
+ 221 0000 10B9     		cbnz	r0, .L24
+ 222              		.loc 1 48 0 is_stmt 0 discriminator 1
+ 223 0002 034B     		ldr	r3, .L26
+ 224 0004 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 225              	.LVL23:
+ 226 0006 7047     		bx	lr
+ 227              	.LVL24:
+ 228              	.L24:
+ 229              		.loc 1 48 0 discriminator 2
+ 230 0008 014B     		ldr	r3, .L26
+ 231 000a 5878     		ldrb	r0, [r3, #1]	@ zero_extendqisi2
+ 232              	.LVL25:
+  49:pwm_driver.c  **** }
+ 233              		.loc 1 49 0 is_stmt 1 discriminator 2
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 6
+
+
+ 234 000c 7047     		bx	lr
+ 235              	.L27:
+ 236 000e 00BF     		.align	2
+ 237              	.L26:
+ 238 0010 00000000 		.word	.LANCHOR0
+ 239              		.cfi_endproc
+ 240              	.LFE66:
+ 241              		.size	PWM_GetState, .-PWM_GetState
+ 242              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 243              		.align	2
+ 244              	.LC0:
+ 245 0000 4C656674 		.ascii	"Left LED: ON\000"
+ 245      204C4544 
+ 245      3A204F4E 
+ 245      00
+ 246 000d 000000   		.space	3
+ 247              	.LC1:
+ 248 0010 4C656674 		.ascii	"Left LED: OFF\000"
+ 248      204C4544 
+ 248      3A204F46 
+ 248      4600
+ 249 001e 0000     		.space	2
+ 250              	.LC2:
+ 251 0020 52696768 		.ascii	"Right LED: ON\000"
+ 251      74204C45 
+ 251      443A204F 
+ 251      4E00
+ 252 002e 0000     		.space	2
+ 253              	.LC3:
+ 254 0030 52696768 		.ascii	"Right LED: OFF\000"
+ 254      74204C45 
+ 254      443A204F 
+ 254      464600
+ 255 003f 00       		.space	1
+ 256              	.LC4:
+ 257 0040 4C656674 		.ascii	"Left LED: ON (Toggled)\000"
+ 257      204C4544 
+ 257      3A204F4E 
+ 257      2028546F 
+ 257      67676C65 
+ 258 0057 00       		.space	1
+ 259              	.LC5:
+ 260 0058 4C656674 		.ascii	"Left LED: OFF (Toggled)\000"
+ 260      204C4544 
+ 260      3A204F46 
+ 260      46202854 
+ 260      6F67676C 
+ 261              	.LC6:
+ 262 0070 52696768 		.ascii	"Right LED: ON (Toggled)\000"
+ 262      74204C45 
+ 262      443A204F 
+ 262      4E202854 
+ 262      6F67676C 
+ 263              	.LC7:
+ 264 0088 52696768 		.ascii	"Right LED: OFF (Toggled)\000"
+ 264      74204C45 
+ 264      443A204F 
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 7
+
+
+ 264      46462028 
+ 264      546F6767 
+ 265              		.bss
+ 266              		.set	.LANCHOR0,. + 0
+ 267              		.type	left_led_state, %object
+ 268              		.size	left_led_state, 1
+ 269              	left_led_state:
+ 270 0000 00       		.space	1
+ 271              		.type	right_led_state, %object
+ 272              		.size	right_led_state, 1
+ 273              	right_led_state:
+ 274 0001 00       		.space	1
+ 275              		.text
+ 276              	.Letext0:
+ 277              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 278              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 279              		.file 4 "Generated_Source\\PSoC5/core_cm3.h"
+ 280              		.file 5 "uart_driver.h"
+ 281              		.section	.debug_info,"",%progbits
+ 282              	.Ldebug_info0:
+ 283 0000 DD010000 		.4byte	0x1dd
+ 284 0004 0400     		.2byte	0x4
+ 285 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 286 000a 04       		.byte	0x4
+ 287 000b 01       		.uleb128 0x1
+ 288 000c 4E000000 		.4byte	.LASF25
+ 289 0010 0C       		.byte	0xc
+ 290 0011 18020000 		.4byte	.LASF26
+ 291 0015 C2010000 		.4byte	.LASF27
+ 292 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 293 001d 00000000 		.4byte	0
+ 294 0021 00000000 		.4byte	.Ldebug_line0
+ 295 0025 02       		.uleb128 0x2
+ 296 0026 01       		.byte	0x1
+ 297 0027 06       		.byte	0x6
+ 298 0028 0C020000 		.4byte	.LASF0
+ 299 002c 03       		.uleb128 0x3
+ 300 002d 00000000 		.4byte	.LASF4
+ 301 0031 02       		.byte	0x2
+ 302 0032 1D       		.byte	0x1d
+ 303 0033 37000000 		.4byte	0x37
+ 304 0037 02       		.uleb128 0x2
+ 305 0038 01       		.byte	0x1
+ 306 0039 08       		.byte	0x8
+ 307 003a 40000000 		.4byte	.LASF1
+ 308 003e 02       		.uleb128 0x2
+ 309 003f 02       		.byte	0x2
+ 310 0040 05       		.byte	0x5
+ 311 0041 A4010000 		.4byte	.LASF2
+ 312 0045 02       		.uleb128 0x2
+ 313 0046 02       		.byte	0x2
+ 314 0047 07       		.byte	0x7
+ 315 0048 EE000000 		.4byte	.LASF3
+ 316 004c 03       		.uleb128 0x3
+ 317 004d 18000000 		.4byte	.LASF5
+ 318 0051 02       		.byte	0x2
+ 319 0052 3F       		.byte	0x3f
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 8
+
+
+ 320 0053 57000000 		.4byte	0x57
+ 321 0057 02       		.uleb128 0x2
+ 322 0058 04       		.byte	0x4
+ 323 0059 05       		.byte	0x5
+ 324 005a B9010000 		.4byte	.LASF6
+ 325 005e 02       		.uleb128 0x2
+ 326 005f 04       		.byte	0x4
+ 327 0060 07       		.byte	0x7
+ 328 0061 DC000000 		.4byte	.LASF7
+ 329 0065 02       		.uleb128 0x2
+ 330 0066 08       		.byte	0x8
+ 331 0067 05       		.byte	0x5
+ 332 0068 91010000 		.4byte	.LASF8
+ 333 006c 02       		.uleb128 0x2
+ 334 006d 08       		.byte	0x8
+ 335 006e 07       		.byte	0x7
+ 336 006f 54010000 		.4byte	.LASF9
+ 337 0073 04       		.uleb128 0x4
+ 338 0074 04       		.byte	0x4
+ 339 0075 05       		.byte	0x5
+ 340 0076 696E7400 		.ascii	"int\000"
+ 341 007a 02       		.uleb128 0x2
+ 342 007b 04       		.byte	0x4
+ 343 007c 07       		.byte	0x7
+ 344 007d 47010000 		.4byte	.LASF10
+ 345 0081 03       		.uleb128 0x3
+ 346 0082 6B010000 		.4byte	.LASF11
+ 347 0086 03       		.byte	0x3
+ 348 0087 18       		.byte	0x18
+ 349 0088 2C000000 		.4byte	0x2c
+ 350 008c 03       		.uleb128 0x3
+ 351 008d 32000000 		.4byte	.LASF12
+ 352 0091 03       		.byte	0x3
+ 353 0092 2C       		.byte	0x2c
+ 354 0093 4C000000 		.4byte	0x4c
+ 355 0097 02       		.uleb128 0x2
+ 356 0098 04       		.byte	0x4
+ 357 0099 04       		.byte	0x4
+ 358 009a 3A000000 		.4byte	.LASF13
+ 359 009e 02       		.uleb128 0x2
+ 360 009f 08       		.byte	0x8
+ 361 00a0 04       		.byte	0x4
+ 362 00a1 0E010000 		.4byte	.LASF14
+ 363 00a5 02       		.uleb128 0x2
+ 364 00a6 01       		.byte	0x1
+ 365 00a7 08       		.byte	0x8
+ 366 00a8 9F010000 		.4byte	.LASF15
+ 367 00ac 02       		.uleb128 0x2
+ 368 00ad 08       		.byte	0x8
+ 369 00ae 04       		.byte	0x4
+ 370 00af 7C010000 		.4byte	.LASF16
+ 371 00b3 02       		.uleb128 0x2
+ 372 00b4 04       		.byte	0x4
+ 373 00b5 07       		.byte	0x7
+ 374 00b6 88010000 		.4byte	.LASF17
+ 375 00ba 05       		.uleb128 0x5
+ 376 00bb 15010000 		.4byte	.LASF20
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 9
+
+
+ 377 00bf 01       		.byte	0x1
+ 378 00c0 17       		.byte	0x17
+ 379 00c1 00000000 		.4byte	.LFB64
+ 380 00c5 50000000 		.4byte	.LFE64-.LFB64
+ 381 00c9 01       		.uleb128 0x1
+ 382 00ca 9C       		.byte	0x9c
+ 383 00cb 00010000 		.4byte	0x100
+ 384 00cf 06       		.uleb128 0x6
+ 385 00d0 0A000000 		.4byte	.LASF18
+ 386 00d4 01       		.byte	0x1
+ 387 00d5 17       		.byte	0x17
+ 388 00d6 81000000 		.4byte	0x81
+ 389 00da 00000000 		.4byte	.LLST0
+ 390 00de 06       		.uleb128 0x6
+ 391 00df 12000000 		.4byte	.LASF19
+ 392 00e3 01       		.byte	0x1
+ 393 00e4 17       		.byte	0x17
+ 394 00e5 81000000 		.4byte	0x81
+ 395 00e9 6C000000 		.4byte	.LLST1
+ 396 00ed 07       		.uleb128 0x7
+ 397 00ee 1C000000 		.4byte	.LVL4
+ 398 00f2 D5010000 		.4byte	0x1d5
+ 399 00f6 07       		.uleb128 0x7
+ 400 00f7 3A000000 		.4byte	.LVL9
+ 401 00fb D5010000 		.4byte	0x1d5
+ 402 00ff 00       		.byte	0
+ 403 0100 05       		.uleb128 0x5
+ 404 0101 2F010000 		.4byte	.LASF21
+ 405 0105 01       		.byte	0x1
+ 406 0106 12       		.byte	0x12
+ 407 0107 00000000 		.4byte	.LFB63
+ 408 010b 14000000 		.4byte	.LFE63-.LFB63
+ 409 010f 01       		.uleb128 0x1
+ 410 0110 9C       		.byte	0x9c
+ 411 0111 42010000 		.4byte	0x142
+ 412 0115 08       		.uleb128 0x8
+ 413 0116 0A000000 		.4byte	.LVL10
+ 414 011a BA000000 		.4byte	0xba
+ 415 011e 2D010000 		.4byte	0x12d
+ 416 0122 09       		.uleb128 0x9
+ 417 0123 01       		.uleb128 0x1
+ 418 0124 50       		.byte	0x50
+ 419 0125 01       		.uleb128 0x1
+ 420 0126 30       		.byte	0x30
+ 421 0127 09       		.uleb128 0x9
+ 422 0128 01       		.uleb128 0x1
+ 423 0129 51       		.byte	0x51
+ 424 012a 01       		.uleb128 0x1
+ 425 012b 30       		.byte	0x30
+ 426 012c 00       		.byte	0
+ 427 012d 0A       		.uleb128 0xa
+ 428 012e 12000000 		.4byte	.LVL11
+ 429 0132 BA000000 		.4byte	0xba
+ 430 0136 09       		.uleb128 0x9
+ 431 0137 01       		.uleb128 0x1
+ 432 0138 50       		.byte	0x50
+ 433 0139 01       		.uleb128 0x1
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 10
+
+
+ 434 013a 31       		.byte	0x31
+ 435 013b 09       		.uleb128 0x9
+ 436 013c 01       		.uleb128 0x1
+ 437 013d 51       		.byte	0x51
+ 438 013e 01       		.uleb128 0x1
+ 439 013f 30       		.byte	0x30
+ 440 0140 00       		.byte	0
+ 441 0141 00       		.byte	0
+ 442 0142 05       		.uleb128 0x5
+ 443 0143 AE010000 		.4byte	.LASF22
+ 444 0147 01       		.byte	0x1
+ 445 0148 25       		.byte	0x25
+ 446 0149 00000000 		.4byte	.LFB65
+ 447 014d 50000000 		.4byte	.LFE65-.LFB65
+ 448 0151 01       		.uleb128 0x1
+ 449 0152 9C       		.byte	0x9c
+ 450 0153 79010000 		.4byte	0x179
+ 451 0157 06       		.uleb128 0x6
+ 452 0158 0A000000 		.4byte	.LASF18
+ 453 015c 01       		.byte	0x1
+ 454 015d 25       		.byte	0x25
+ 455 015e 81000000 		.4byte	0x81
+ 456 0162 A6000000 		.4byte	.LLST2
+ 457 0166 07       		.uleb128 0x7
+ 458 0167 1C000000 		.4byte	.LVL16
+ 459 016b D5010000 		.4byte	0x1d5
+ 460 016f 07       		.uleb128 0x7
+ 461 0170 3A000000 		.4byte	.LVL21
+ 462 0174 D5010000 		.4byte	0x1d5
+ 463 0178 00       		.byte	0
+ 464 0179 0B       		.uleb128 0xb
+ 465 017a 22010000 		.4byte	.LASF28
+ 466 017e 01       		.byte	0x1
+ 467 017f 2F       		.byte	0x2f
+ 468 0180 81000000 		.4byte	0x81
+ 469 0184 00000000 		.4byte	.LFB66
+ 470 0188 14000000 		.4byte	.LFE66-.LFB66
+ 471 018c 01       		.uleb128 0x1
+ 472 018d 9C       		.byte	0x9c
+ 473 018e A2010000 		.4byte	0x1a2
+ 474 0192 06       		.uleb128 0x6
+ 475 0193 0A000000 		.4byte	.LASF18
+ 476 0197 01       		.byte	0x1
+ 477 0198 2F       		.byte	0x2f
+ 478 0199 81000000 		.4byte	0x81
+ 479 019d 12010000 		.4byte	.LLST3
+ 480 01a1 00       		.byte	0
+ 481 01a2 0C       		.uleb128 0xc
+ 482 01a3 38010000 		.4byte	.LASF23
+ 483 01a7 01       		.byte	0x1
+ 484 01a8 0F       		.byte	0xf
+ 485 01a9 81000000 		.4byte	0x81
+ 486 01ad 05       		.uleb128 0x5
+ 487 01ae 03       		.byte	0x3
+ 488 01af 00000000 		.4byte	left_led_state
+ 489 01b3 0C       		.uleb128 0xc
+ 490 01b4 22000000 		.4byte	.LASF24
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 11
+
+
+ 491 01b8 01       		.byte	0x1
+ 492 01b9 10       		.byte	0x10
+ 493 01ba 81000000 		.4byte	0x81
+ 494 01be 05       		.uleb128 0x5
+ 495 01bf 03       		.byte	0x3
+ 496 01c0 01000000 		.4byte	right_led_state
+ 497 01c4 0D       		.uleb128 0xd
+ 498 01c5 01010000 		.4byte	.LASF29
+ 499 01c9 04       		.byte	0x4
+ 500 01ca 1207     		.2byte	0x712
+ 501 01cc D0010000 		.4byte	0x1d0
+ 502 01d0 0E       		.uleb128 0xe
+ 503 01d1 8C000000 		.4byte	0x8c
+ 504 01d5 0F       		.uleb128 0xf
+ 505 01d6 73010000 		.4byte	.LASF30
+ 506 01da 73010000 		.4byte	.LASF30
+ 507 01de 05       		.byte	0x5
+ 508 01df 12       		.byte	0x12
+ 509 01e0 00       		.byte	0
+ 510              		.section	.debug_abbrev,"",%progbits
+ 511              	.Ldebug_abbrev0:
+ 512 0000 01       		.uleb128 0x1
+ 513 0001 11       		.uleb128 0x11
+ 514 0002 01       		.byte	0x1
+ 515 0003 25       		.uleb128 0x25
+ 516 0004 0E       		.uleb128 0xe
+ 517 0005 13       		.uleb128 0x13
+ 518 0006 0B       		.uleb128 0xb
+ 519 0007 03       		.uleb128 0x3
+ 520 0008 0E       		.uleb128 0xe
+ 521 0009 1B       		.uleb128 0x1b
+ 522 000a 0E       		.uleb128 0xe
+ 523 000b 55       		.uleb128 0x55
+ 524 000c 17       		.uleb128 0x17
+ 525 000d 11       		.uleb128 0x11
+ 526 000e 01       		.uleb128 0x1
+ 527 000f 10       		.uleb128 0x10
+ 528 0010 17       		.uleb128 0x17
+ 529 0011 00       		.byte	0
+ 530 0012 00       		.byte	0
+ 531 0013 02       		.uleb128 0x2
+ 532 0014 24       		.uleb128 0x24
+ 533 0015 00       		.byte	0
+ 534 0016 0B       		.uleb128 0xb
+ 535 0017 0B       		.uleb128 0xb
+ 536 0018 3E       		.uleb128 0x3e
+ 537 0019 0B       		.uleb128 0xb
+ 538 001a 03       		.uleb128 0x3
+ 539 001b 0E       		.uleb128 0xe
+ 540 001c 00       		.byte	0
+ 541 001d 00       		.byte	0
+ 542 001e 03       		.uleb128 0x3
+ 543 001f 16       		.uleb128 0x16
+ 544 0020 00       		.byte	0
+ 545 0021 03       		.uleb128 0x3
+ 546 0022 0E       		.uleb128 0xe
+ 547 0023 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 12
+
+
+ 548 0024 0B       		.uleb128 0xb
+ 549 0025 3B       		.uleb128 0x3b
+ 550 0026 0B       		.uleb128 0xb
+ 551 0027 49       		.uleb128 0x49
+ 552 0028 13       		.uleb128 0x13
+ 553 0029 00       		.byte	0
+ 554 002a 00       		.byte	0
+ 555 002b 04       		.uleb128 0x4
+ 556 002c 24       		.uleb128 0x24
+ 557 002d 00       		.byte	0
+ 558 002e 0B       		.uleb128 0xb
+ 559 002f 0B       		.uleb128 0xb
+ 560 0030 3E       		.uleb128 0x3e
+ 561 0031 0B       		.uleb128 0xb
+ 562 0032 03       		.uleb128 0x3
+ 563 0033 08       		.uleb128 0x8
+ 564 0034 00       		.byte	0
+ 565 0035 00       		.byte	0
+ 566 0036 05       		.uleb128 0x5
+ 567 0037 2E       		.uleb128 0x2e
+ 568 0038 01       		.byte	0x1
+ 569 0039 3F       		.uleb128 0x3f
+ 570 003a 19       		.uleb128 0x19
+ 571 003b 03       		.uleb128 0x3
+ 572 003c 0E       		.uleb128 0xe
+ 573 003d 3A       		.uleb128 0x3a
+ 574 003e 0B       		.uleb128 0xb
+ 575 003f 3B       		.uleb128 0x3b
+ 576 0040 0B       		.uleb128 0xb
+ 577 0041 27       		.uleb128 0x27
+ 578 0042 19       		.uleb128 0x19
+ 579 0043 11       		.uleb128 0x11
+ 580 0044 01       		.uleb128 0x1
+ 581 0045 12       		.uleb128 0x12
+ 582 0046 06       		.uleb128 0x6
+ 583 0047 40       		.uleb128 0x40
+ 584 0048 18       		.uleb128 0x18
+ 585 0049 9742     		.uleb128 0x2117
+ 586 004b 19       		.uleb128 0x19
+ 587 004c 01       		.uleb128 0x1
+ 588 004d 13       		.uleb128 0x13
+ 589 004e 00       		.byte	0
+ 590 004f 00       		.byte	0
+ 591 0050 06       		.uleb128 0x6
+ 592 0051 05       		.uleb128 0x5
+ 593 0052 00       		.byte	0
+ 594 0053 03       		.uleb128 0x3
+ 595 0054 0E       		.uleb128 0xe
+ 596 0055 3A       		.uleb128 0x3a
+ 597 0056 0B       		.uleb128 0xb
+ 598 0057 3B       		.uleb128 0x3b
+ 599 0058 0B       		.uleb128 0xb
+ 600 0059 49       		.uleb128 0x49
+ 601 005a 13       		.uleb128 0x13
+ 602 005b 02       		.uleb128 0x2
+ 603 005c 17       		.uleb128 0x17
+ 604 005d 00       		.byte	0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 13
+
+
+ 605 005e 00       		.byte	0
+ 606 005f 07       		.uleb128 0x7
+ 607 0060 898201   		.uleb128 0x4109
+ 608 0063 00       		.byte	0
+ 609 0064 11       		.uleb128 0x11
+ 610 0065 01       		.uleb128 0x1
+ 611 0066 31       		.uleb128 0x31
+ 612 0067 13       		.uleb128 0x13
+ 613 0068 00       		.byte	0
+ 614 0069 00       		.byte	0
+ 615 006a 08       		.uleb128 0x8
+ 616 006b 898201   		.uleb128 0x4109
+ 617 006e 01       		.byte	0x1
+ 618 006f 11       		.uleb128 0x11
+ 619 0070 01       		.uleb128 0x1
+ 620 0071 31       		.uleb128 0x31
+ 621 0072 13       		.uleb128 0x13
+ 622 0073 01       		.uleb128 0x1
+ 623 0074 13       		.uleb128 0x13
+ 624 0075 00       		.byte	0
+ 625 0076 00       		.byte	0
+ 626 0077 09       		.uleb128 0x9
+ 627 0078 8A8201   		.uleb128 0x410a
+ 628 007b 00       		.byte	0
+ 629 007c 02       		.uleb128 0x2
+ 630 007d 18       		.uleb128 0x18
+ 631 007e 9142     		.uleb128 0x2111
+ 632 0080 18       		.uleb128 0x18
+ 633 0081 00       		.byte	0
+ 634 0082 00       		.byte	0
+ 635 0083 0A       		.uleb128 0xa
+ 636 0084 898201   		.uleb128 0x4109
+ 637 0087 01       		.byte	0x1
+ 638 0088 11       		.uleb128 0x11
+ 639 0089 01       		.uleb128 0x1
+ 640 008a 31       		.uleb128 0x31
+ 641 008b 13       		.uleb128 0x13
+ 642 008c 00       		.byte	0
+ 643 008d 00       		.byte	0
+ 644 008e 0B       		.uleb128 0xb
+ 645 008f 2E       		.uleb128 0x2e
+ 646 0090 01       		.byte	0x1
+ 647 0091 3F       		.uleb128 0x3f
+ 648 0092 19       		.uleb128 0x19
+ 649 0093 03       		.uleb128 0x3
+ 650 0094 0E       		.uleb128 0xe
+ 651 0095 3A       		.uleb128 0x3a
+ 652 0096 0B       		.uleb128 0xb
+ 653 0097 3B       		.uleb128 0x3b
+ 654 0098 0B       		.uleb128 0xb
+ 655 0099 27       		.uleb128 0x27
+ 656 009a 19       		.uleb128 0x19
+ 657 009b 49       		.uleb128 0x49
+ 658 009c 13       		.uleb128 0x13
+ 659 009d 11       		.uleb128 0x11
+ 660 009e 01       		.uleb128 0x1
+ 661 009f 12       		.uleb128 0x12
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 14
+
+
+ 662 00a0 06       		.uleb128 0x6
+ 663 00a1 40       		.uleb128 0x40
+ 664 00a2 18       		.uleb128 0x18
+ 665 00a3 9742     		.uleb128 0x2117
+ 666 00a5 19       		.uleb128 0x19
+ 667 00a6 01       		.uleb128 0x1
+ 668 00a7 13       		.uleb128 0x13
+ 669 00a8 00       		.byte	0
+ 670 00a9 00       		.byte	0
+ 671 00aa 0C       		.uleb128 0xc
+ 672 00ab 34       		.uleb128 0x34
+ 673 00ac 00       		.byte	0
+ 674 00ad 03       		.uleb128 0x3
+ 675 00ae 0E       		.uleb128 0xe
+ 676 00af 3A       		.uleb128 0x3a
+ 677 00b0 0B       		.uleb128 0xb
+ 678 00b1 3B       		.uleb128 0x3b
+ 679 00b2 0B       		.uleb128 0xb
+ 680 00b3 49       		.uleb128 0x49
+ 681 00b4 13       		.uleb128 0x13
+ 682 00b5 02       		.uleb128 0x2
+ 683 00b6 18       		.uleb128 0x18
+ 684 00b7 00       		.byte	0
+ 685 00b8 00       		.byte	0
+ 686 00b9 0D       		.uleb128 0xd
+ 687 00ba 34       		.uleb128 0x34
+ 688 00bb 00       		.byte	0
+ 689 00bc 03       		.uleb128 0x3
+ 690 00bd 0E       		.uleb128 0xe
+ 691 00be 3A       		.uleb128 0x3a
+ 692 00bf 0B       		.uleb128 0xb
+ 693 00c0 3B       		.uleb128 0x3b
+ 694 00c1 05       		.uleb128 0x5
+ 695 00c2 49       		.uleb128 0x49
+ 696 00c3 13       		.uleb128 0x13
+ 697 00c4 3F       		.uleb128 0x3f
+ 698 00c5 19       		.uleb128 0x19
+ 699 00c6 3C       		.uleb128 0x3c
+ 700 00c7 19       		.uleb128 0x19
+ 701 00c8 00       		.byte	0
+ 702 00c9 00       		.byte	0
+ 703 00ca 0E       		.uleb128 0xe
+ 704 00cb 35       		.uleb128 0x35
+ 705 00cc 00       		.byte	0
+ 706 00cd 49       		.uleb128 0x49
+ 707 00ce 13       		.uleb128 0x13
+ 708 00cf 00       		.byte	0
+ 709 00d0 00       		.byte	0
+ 710 00d1 0F       		.uleb128 0xf
+ 711 00d2 2E       		.uleb128 0x2e
+ 712 00d3 00       		.byte	0
+ 713 00d4 3F       		.uleb128 0x3f
+ 714 00d5 19       		.uleb128 0x19
+ 715 00d6 3C       		.uleb128 0x3c
+ 716 00d7 19       		.uleb128 0x19
+ 717 00d8 6E       		.uleb128 0x6e
+ 718 00d9 0E       		.uleb128 0xe
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 15
+
+
+ 719 00da 03       		.uleb128 0x3
+ 720 00db 0E       		.uleb128 0xe
+ 721 00dc 3A       		.uleb128 0x3a
+ 722 00dd 0B       		.uleb128 0xb
+ 723 00de 3B       		.uleb128 0x3b
+ 724 00df 0B       		.uleb128 0xb
+ 725 00e0 00       		.byte	0
+ 726 00e1 00       		.byte	0
+ 727 00e2 00       		.byte	0
+ 728              		.section	.debug_loc,"",%progbits
+ 729              	.Ldebug_loc0:
+ 730              	.LLST0:
+ 731 0000 00000000 		.4byte	.LVL0
+ 732 0004 14000000 		.4byte	.LVL1
+ 733 0008 0100     		.2byte	0x1
+ 734 000a 50       		.byte	0x50
+ 735 000b 14000000 		.4byte	.LVL1
+ 736 000f 16000000 		.4byte	.LVL2
+ 737 0013 0400     		.2byte	0x4
+ 738 0015 F3       		.byte	0xf3
+ 739 0016 01       		.uleb128 0x1
+ 740 0017 50       		.byte	0x50
+ 741 0018 9F       		.byte	0x9f
+ 742 0019 16000000 		.4byte	.LVL2
+ 743 001d 18000000 		.4byte	.LVL3
+ 744 0021 0100     		.2byte	0x1
+ 745 0023 50       		.byte	0x50
+ 746 0024 18000000 		.4byte	.LVL3
+ 747 0028 1E000000 		.4byte	.LVL5
+ 748 002c 0400     		.2byte	0x4
+ 749 002e F3       		.byte	0xf3
+ 750 002f 01       		.uleb128 0x1
+ 751 0030 50       		.byte	0x50
+ 752 0031 9F       		.byte	0x9f
+ 753 0032 1E000000 		.4byte	.LVL5
+ 754 0036 32000000 		.4byte	.LVL6
+ 755 003a 0100     		.2byte	0x1
+ 756 003c 50       		.byte	0x50
+ 757 003d 32000000 		.4byte	.LVL6
+ 758 0041 34000000 		.4byte	.LVL7
+ 759 0045 0400     		.2byte	0x4
+ 760 0047 F3       		.byte	0xf3
+ 761 0048 01       		.uleb128 0x1
+ 762 0049 50       		.byte	0x50
+ 763 004a 9F       		.byte	0x9f
+ 764 004b 34000000 		.4byte	.LVL7
+ 765 004f 36000000 		.4byte	.LVL8
+ 766 0053 0100     		.2byte	0x1
+ 767 0055 50       		.byte	0x50
+ 768 0056 36000000 		.4byte	.LVL8
+ 769 005a 50000000 		.4byte	.LFE64
+ 770 005e 0400     		.2byte	0x4
+ 771 0060 F3       		.byte	0xf3
+ 772 0061 01       		.uleb128 0x1
+ 773 0062 50       		.byte	0x50
+ 774 0063 9F       		.byte	0x9f
+ 775 0064 00000000 		.4byte	0
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 16
+
+
+ 776 0068 00000000 		.4byte	0
+ 777              	.LLST1:
+ 778 006c 00000000 		.4byte	.LVL0
+ 779 0070 1B000000 		.4byte	.LVL4-1
+ 780 0074 0100     		.2byte	0x1
+ 781 0076 51       		.byte	0x51
+ 782 0077 1B000000 		.4byte	.LVL4-1
+ 783 007b 1E000000 		.4byte	.LVL5
+ 784 007f 0400     		.2byte	0x4
+ 785 0081 F3       		.byte	0xf3
+ 786 0082 01       		.uleb128 0x1
+ 787 0083 51       		.byte	0x51
+ 788 0084 9F       		.byte	0x9f
+ 789 0085 1E000000 		.4byte	.LVL5
+ 790 0089 39000000 		.4byte	.LVL9-1
+ 791 008d 0100     		.2byte	0x1
+ 792 008f 51       		.byte	0x51
+ 793 0090 39000000 		.4byte	.LVL9-1
+ 794 0094 50000000 		.4byte	.LFE64
+ 795 0098 0400     		.2byte	0x4
+ 796 009a F3       		.byte	0xf3
+ 797 009b 01       		.uleb128 0x1
+ 798 009c 51       		.byte	0x51
+ 799 009d 9F       		.byte	0x9f
+ 800 009e 00000000 		.4byte	0
+ 801 00a2 00000000 		.4byte	0
+ 802              	.LLST2:
+ 803 00a6 00000000 		.4byte	.LVL12
+ 804 00aa 14000000 		.4byte	.LVL13
+ 805 00ae 0100     		.2byte	0x1
+ 806 00b0 50       		.byte	0x50
+ 807 00b1 14000000 		.4byte	.LVL13
+ 808 00b5 16000000 		.4byte	.LVL14
+ 809 00b9 0400     		.2byte	0x4
+ 810 00bb F3       		.byte	0xf3
+ 811 00bc 01       		.uleb128 0x1
+ 812 00bd 50       		.byte	0x50
+ 813 00be 9F       		.byte	0x9f
+ 814 00bf 16000000 		.4byte	.LVL14
+ 815 00c3 18000000 		.4byte	.LVL15
+ 816 00c7 0100     		.2byte	0x1
+ 817 00c9 50       		.byte	0x50
+ 818 00ca 18000000 		.4byte	.LVL15
+ 819 00ce 1E000000 		.4byte	.LVL17
+ 820 00d2 0400     		.2byte	0x4
+ 821 00d4 F3       		.byte	0xf3
+ 822 00d5 01       		.uleb128 0x1
+ 823 00d6 50       		.byte	0x50
+ 824 00d7 9F       		.byte	0x9f
+ 825 00d8 1E000000 		.4byte	.LVL17
+ 826 00dc 32000000 		.4byte	.LVL18
+ 827 00e0 0100     		.2byte	0x1
+ 828 00e2 50       		.byte	0x50
+ 829 00e3 32000000 		.4byte	.LVL18
+ 830 00e7 34000000 		.4byte	.LVL19
+ 831 00eb 0400     		.2byte	0x4
+ 832 00ed F3       		.byte	0xf3
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 17
+
+
+ 833 00ee 01       		.uleb128 0x1
+ 834 00ef 50       		.byte	0x50
+ 835 00f0 9F       		.byte	0x9f
+ 836 00f1 34000000 		.4byte	.LVL19
+ 837 00f5 36000000 		.4byte	.LVL20
+ 838 00f9 0100     		.2byte	0x1
+ 839 00fb 50       		.byte	0x50
+ 840 00fc 36000000 		.4byte	.LVL20
+ 841 0100 50000000 		.4byte	.LFE65
+ 842 0104 0400     		.2byte	0x4
+ 843 0106 F3       		.byte	0xf3
+ 844 0107 01       		.uleb128 0x1
+ 845 0108 50       		.byte	0x50
+ 846 0109 9F       		.byte	0x9f
+ 847 010a 00000000 		.4byte	0
+ 848 010e 00000000 		.4byte	0
+ 849              	.LLST3:
+ 850 0112 00000000 		.4byte	.LVL22
+ 851 0116 06000000 		.4byte	.LVL23
+ 852 011a 0100     		.2byte	0x1
+ 853 011c 50       		.byte	0x50
+ 854 011d 06000000 		.4byte	.LVL23
+ 855 0121 08000000 		.4byte	.LVL24
+ 856 0125 0400     		.2byte	0x4
+ 857 0127 F3       		.byte	0xf3
+ 858 0128 01       		.uleb128 0x1
+ 859 0129 50       		.byte	0x50
+ 860 012a 9F       		.byte	0x9f
+ 861 012b 08000000 		.4byte	.LVL24
+ 862 012f 0C000000 		.4byte	.LVL25
+ 863 0133 0100     		.2byte	0x1
+ 864 0135 50       		.byte	0x50
+ 865 0136 0C000000 		.4byte	.LVL25
+ 866 013a 14000000 		.4byte	.LFE66
+ 867 013e 0400     		.2byte	0x4
+ 868 0140 F3       		.byte	0xf3
+ 869 0141 01       		.uleb128 0x1
+ 870 0142 50       		.byte	0x50
+ 871 0143 9F       		.byte	0x9f
+ 872 0144 00000000 		.4byte	0
+ 873 0148 00000000 		.4byte	0
+ 874              		.section	.debug_aranges,"",%progbits
+ 875 0000 34000000 		.4byte	0x34
+ 876 0004 0200     		.2byte	0x2
+ 877 0006 00000000 		.4byte	.Ldebug_info0
+ 878 000a 04       		.byte	0x4
+ 879 000b 00       		.byte	0
+ 880 000c 0000     		.2byte	0
+ 881 000e 0000     		.2byte	0
+ 882 0010 00000000 		.4byte	.LFB64
+ 883 0014 50000000 		.4byte	.LFE64-.LFB64
+ 884 0018 00000000 		.4byte	.LFB63
+ 885 001c 14000000 		.4byte	.LFE63-.LFB63
+ 886 0020 00000000 		.4byte	.LFB65
+ 887 0024 50000000 		.4byte	.LFE65-.LFB65
+ 888 0028 00000000 		.4byte	.LFB66
+ 889 002c 14000000 		.4byte	.LFE66-.LFB66
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 18
+
+
+ 890 0030 00000000 		.4byte	0
+ 891 0034 00000000 		.4byte	0
+ 892              		.section	.debug_ranges,"",%progbits
+ 893              	.Ldebug_ranges0:
+ 894 0000 00000000 		.4byte	.LFB64
+ 895 0004 50000000 		.4byte	.LFE64
+ 896 0008 00000000 		.4byte	.LFB63
+ 897 000c 14000000 		.4byte	.LFE63
+ 898 0010 00000000 		.4byte	.LFB65
+ 899 0014 50000000 		.4byte	.LFE65
+ 900 0018 00000000 		.4byte	.LFB66
+ 901 001c 14000000 		.4byte	.LFE66
+ 902 0020 00000000 		.4byte	0
+ 903 0024 00000000 		.4byte	0
+ 904              		.section	.debug_line,"",%progbits
+ 905              	.Ldebug_line0:
+ 906 0000 D4010000 		.section	.debug_str,"MS",%progbits,1
+ 906      02005601 
+ 906      00000201 
+ 906      FB0E0D00 
+ 906      01010101 
+ 907              	.LASF4:
+ 908 0000 5F5F7569 		.ascii	"__uint8_t\000"
+ 908      6E74385F 
+ 908      7400
+ 909              	.LASF18:
+ 910 000a 6368616E 		.ascii	"channel\000"
+ 910      6E656C00 
+ 911              	.LASF19:
+ 912 0012 73746174 		.ascii	"state\000"
+ 912      6500
+ 913              	.LASF5:
+ 914 0018 5F5F696E 		.ascii	"__int32_t\000"
+ 914      7433325F 
+ 914      7400
+ 915              	.LASF24:
+ 916 0022 72696768 		.ascii	"right_led_state\000"
+ 916      745F6C65 
+ 916      645F7374 
+ 916      61746500 
+ 917              	.LASF12:
+ 918 0032 696E7433 		.ascii	"int32_t\000"
+ 918      325F7400 
+ 919              	.LASF13:
+ 920 003a 666C6F61 		.ascii	"float\000"
+ 920      7400
+ 921              	.LASF1:
+ 922 0040 756E7369 		.ascii	"unsigned char\000"
+ 922      676E6564 
+ 922      20636861 
+ 922      7200
+ 923              	.LASF25:
+ 924 004e 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 924      43313120 
+ 924      352E342E 
+ 924      31203230 
+ 924      31363036 
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 19
+
+
+ 925 0081 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 925      20726576 
+ 925      6973696F 
+ 925      6E203233 
+ 925      37373135 
+ 926 00b4 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 926      66756E63 
+ 926      74696F6E 
+ 926      2D736563 
+ 926      74696F6E 
+ 927              	.LASF7:
+ 928 00dc 6C6F6E67 		.ascii	"long unsigned int\000"
+ 928      20756E73 
+ 928      69676E65 
+ 928      6420696E 
+ 928      7400
+ 929              	.LASF3:
+ 930 00ee 73686F72 		.ascii	"short unsigned int\000"
+ 930      7420756E 
+ 930      7369676E 
+ 930      65642069 
+ 930      6E7400
+ 931              	.LASF29:
+ 932 0101 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 932      52784275 
+ 932      66666572 
+ 932      00
+ 933              	.LASF14:
+ 934 010e 646F7562 		.ascii	"double\000"
+ 934      6C6500
+ 935              	.LASF20:
+ 936 0115 50574D5F 		.ascii	"PWM_SetState\000"
+ 936      53657453 
+ 936      74617465 
+ 936      00
+ 937              	.LASF28:
+ 938 0122 50574D5F 		.ascii	"PWM_GetState\000"
+ 938      47657453 
+ 938      74617465 
+ 938      00
+ 939              	.LASF21:
+ 940 012f 50574D5F 		.ascii	"PWM_Init\000"
+ 940      496E6974 
+ 940      00
+ 941              	.LASF23:
+ 942 0138 6C656674 		.ascii	"left_led_state\000"
+ 942      5F6C6564 
+ 942      5F737461 
+ 942      746500
+ 943              	.LASF10:
+ 944 0147 756E7369 		.ascii	"unsigned int\000"
+ 944      676E6564 
+ 944      20696E74 
+ 944      00
+ 945              	.LASF9:
+ 946 0154 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 946      206C6F6E 
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 20
+
+
+ 946      6720756E 
+ 946      7369676E 
+ 946      65642069 
+ 947              	.LASF11:
+ 948 016b 75696E74 		.ascii	"uint8_t\000"
+ 948      385F7400 
+ 949              	.LASF30:
+ 950 0173 55415254 		.ascii	"UART_Log\000"
+ 950      5F4C6F67 
+ 950      00
+ 951              	.LASF16:
+ 952 017c 6C6F6E67 		.ascii	"long double\000"
+ 952      20646F75 
+ 952      626C6500 
+ 953              	.LASF17:
+ 954 0188 73697A65 		.ascii	"sizetype\000"
+ 954      74797065 
+ 954      00
+ 955              	.LASF8:
+ 956 0191 6C6F6E67 		.ascii	"long long int\000"
+ 956      206C6F6E 
+ 956      6720696E 
+ 956      7400
+ 957              	.LASF15:
+ 958 019f 63686172 		.ascii	"char\000"
+ 958      00
+ 959              	.LASF2:
+ 960 01a4 73686F72 		.ascii	"short int\000"
+ 960      7420696E 
+ 960      7400
+ 961              	.LASF22:
+ 962 01ae 50574D5F 		.ascii	"PWM_Toggle\000"
+ 962      546F6767 
+ 962      6C6500
+ 963              	.LASF6:
+ 964 01b9 6C6F6E67 		.ascii	"long int\000"
+ 964      20696E74 
+ 964      00
+ 965              	.LASF27:
+ 966 01c2 433A5C55 		.ascii	"C:\\Users\\siman\\OneDrive\\Documents\\PSoC Creator"
+ 966      73657273 
+ 966      5C73696D 
+ 966      616E5C4F 
+ 966      6E654472 
+ 967 01f0 5C417373 		.ascii	"\\Assignment\\MoonRider.cydsn\000"
+ 967      69676E6D 
+ 967      656E745C 
+ 967      4D6F6F6E 
+ 967      52696465 
+ 968              	.LASF0:
+ 969 020c 7369676E 		.ascii	"signed char\000"
+ 969      65642063 
+ 969      68617200 
+ 970              	.LASF26:
+ 971 0218 70776D5F 		.ascii	"pwm_driver.c\000"
+ 971      64726976 
+ 971      65722E63 
+ARM GAS  C:\Users\siman\AppData\Local\Temp\cctBerXZ.s 			page 21
+
+
+ 971      00
+ 972              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
