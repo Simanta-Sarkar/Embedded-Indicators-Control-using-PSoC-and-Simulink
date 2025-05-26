@@ -1,4 +1,4 @@
-# Embedded-Indicators-Control-using-BLE-Protocol-over-PSoC-and-Simulink
+# Embedded-Indicators-Control-using-PSoC-and-Simulink
 
 
 High-Level Architecture and Software Requirement Specification-
