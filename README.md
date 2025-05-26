@@ -1,4 +1,4 @@
-# Embedded-Indicators-Control-Over-Mobile-Phones
+# Embedded-Indicators-Control-using-BLE-Protocol-over-PSoC-and-Simulink
 
 
 High-Level Architecture and Software Requirement Specification-
